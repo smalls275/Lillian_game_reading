@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Lillian's Reading Adventure ⭐</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --pink: #FF6B9D;
+    --purple: #C084FC;
+    --blue: #60A5FA;
+    --green: #34D399;
+    --yellow: #FBBF24;
+    --orange: #FB923C;
+    --red: #F87171;
+    --bg: #FFF7ED;
+    --card: #FFFFFF;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg) url('20240108_160702.jpg') center/cover no-repeat fixed;
+    height: 100vh; height: 100dvh;
+    overflow: hidden;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Floating background shapes */
+  .bg-shapes {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .bg-shape {
+    position: absolute; border-radius: 50%; opacity: 0.12;
+    animation: floatShape 8s ease-in-out infinite;
+  }
+  .bg-shape:nth-child(1) { width:200px;height:200px;background:var(--pink);top:10%;left:-5%;animation-delay:0s; }
+  .bg-shape:nth-child(2) { width:150px;height:150px;background:var(--purple);top:60%;right:-3%;animation-delay:2s; }
+  .bg-shape:nth-child(3) { width:180px;height:180px;background:var(--blue);bottom:5%;left:30%;animation-delay:4s; }
+  .bg-shape:nth-child(4) { width:120px;height:120px;background:var(--yellow);top:25%;right:20%;animation-delay:1s; }
+  .bg-shape:nth-child(5) { width:100px;height:100px;background:var(--green);top:50%;left:15%;animation-delay:3s; }
+
+  @keyframes floatShape {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+
+  /* Header / HUD */
+  .hud {
+    position: relative; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white;
+    box-shadow: 0 4px 20px rgba(192, 132, 252, 0.3);
+  }
+  .hud-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+  }
+  .hud-stats {
+    display: flex; gap: 16px; align-items: center;
+  }
+  .hud-stat {
+    display: flex; align-items: center; gap: 5px;
+    font-weight: 700; font-size: 0.85rem;
+    background: rgba(255,255,255,0.2);
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .hud-stat .emoji { font-size: 1.2rem; }
+
+  /* Progress bar */
+  .progress-wrap {
+    position: relative; z-index: 10;
+    height: 5px; background: rgba(192, 132, 252, 0.15);
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--yellow), var(--orange));
+    transition: width 0.5s ease;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* Main game area */
+  .game-container {
+    position: relative; z-index: 10;
+    max-width: 600px; margin: 0 auto;
+    padding: 8px 14px;
+    display: flex; flex-direction: column; align-items: center;
+    height: calc(100vh - 50px); height: calc(100dvh - 50px);
+    overflow: hidden;
+    background: rgba(255, 247, 237, 0.85);
+    border-radius: 0 0 18px 18px;
+  }
+
+  /* Screens */
+  .screen { display: none; width: 100%; text-align: center; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center; }
+  #screen-game.active { justify-content: flex-start; }
+
+  /* Welcome screen */
+  .welcome-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.2rem;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .welcome-sub {
+    font-size: 1.1rem; color: #888; margin-bottom: 30px; font-weight: 600;
+  }
+  .welcome-mascot {
+    font-size: 4.5rem; margin-bottom: 12px;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  .btn-play {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8rem;
+    padding: 18px 60px;
+    border: none; border-radius: 50px; cursor: pointer;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white;
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-play:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+  }
+
+  /* Question area */
+  .question-card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 12px 14px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    margin-bottom: 6px;
+    flex-shrink: 1;
+    overflow: hidden;
+  }
+  .question-prompt {
+    font-size: 0.8rem; color: #aaa; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .question-display {
+    font-size: 2.2rem; font-weight: 800;
+    color: #334155;
+    line-height: 1.2;
+    min-height: 50px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .question-display .picture-emoji {
+    font-size: 3.8rem;
+  }
+  .question-display.sentence-mode {
+    font-size: 1.3rem;
+  }
+  .question-display.passage-mode {
+    font-size: 1rem;
+    flex-direction: column;
+    text-align: left;
+    gap: 6px;
+    min-height: auto;
+  }
+  .passage-text {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #475569;
+    font-weight: 600;
+    background: #F8FAFC;
+    border-radius: 10px;
+    padding: 10px 12px;
+    border-left: 4px solid var(--purple);
+    max-height: 28vh;
+    overflow-y: auto;
+  }
+  .passage-question {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--pink);
+    text-align: center;
+  }
+  .question-hint {
+    margin-top: 4px; font-size: 0.8rem; color: #94a3b8; font-weight: 600;
+  }
+
+  /* Answer buttons */
+  .answers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+  }
+  .answers-grid.single-col {
+    grid-template-columns: 1fr;
+  }
+
+  .answer-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.25rem; font-weight: 800;
+    padding: 12px 10px;
+    border: 3px solid #E2E8F0;
+    border-radius: 16px;
+    background: white;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    word-break: break-word;
+  }
+  .answer-btn:active {
+    transform: scale(0.96);
+  }
+  .answer-btn.correct {
+    background: var(--green); color: white; border-color: var(--green);
+    animation: popCorrect 0.4s ease;
+  }
+  .answer-btn.wrong {
+    background: var(--red); color: white; border-color: var(--red);
+    animation: shake 0.4s ease;
+  }
+  @keyframes popCorrect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .answer-btn.sentence-opt {
+    font-size: 0.95rem;
+    padding: 10px 10px;
+    text-align: left;
+    min-height: 40px;
+  }
+
+  /* Feedback area */
+  .feedback {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    min-height: 28px;
+    margin-bottom: 2px;
+    transition: opacity 0.3s;
+    flex-shrink: 0;
+  }
+  .feedback.correct-fb { color: var(--green); }
+  .feedback.wrong-fb { color: var(--red); }
+
+  /* Streak indicator */
+  .streak-bar {
+    display: flex; gap: 4px; align-items: center;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  .streak-star {
+    font-size: 1.3rem;
+    transition: all 0.3s;
+    opacity: 0.2;
+  }
+  .streak-star.lit {
+    opacity: 1;
+    animation: starPop 0.4s ease;
+  }
+  @keyframes starPop {
+    0% { transform: scale(0.5) rotate(-20deg); }
+    60% { transform: scale(1.3) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  /* Level up overlay */
+  .overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    justify-content: center; align-items: center;
+    padding: 20px;
+  }
+  .overlay.active { display: flex; }
+
+  .levelup-card {
+    background: white; border-radius: 30px;
+    padding: 20px 20px; text-align: center;
+    max-width: 95vw; width: 100%;
+    animation: slideUp 0.5s ease;
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(60px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .levelup-emoji { font-size: 3rem; margin-bottom: 6px; }
+  .levelup-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+  .levelup-msg {
+    font-size: 1rem; color: #64748B; font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .video-container {
+    width: 100%; aspect-ratio: 16/9;
+    border-radius: 16px; overflow: hidden;
+    margin-bottom: 12px;
+    background: #1e1e2e;
+    max-height: 60vh;
+  }
+  .video-container iframe {
+    width: 100%; height: 100%; border: none;
+  }
+  .video-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: #94a3b8; font-weight: 700;
+  }
+  .video-placeholder .emoji { font-size: 3rem; margin-bottom: 8px; }
+
+  .btn-continue {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    padding: 14px 50px;
+    border: none; border-radius: 50px; cursor: pointer;
+    background: linear-gradient(135deg, var(--green), #059669);
+    color: white;
+    box-shadow: 0 6px 20px rgba(52, 211, 153, 0.4);
+    transition: transform 0.15s;
+  }
+  .btn-continue:active { transform: scale(0.95); }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed; z-index: 200;
+    width: 10px; height: 10px;
+    pointer-events: none;
+  }
+
+  /* Sound toggle */
+  .sound-toggle {
+    position: fixed; bottom: 16px; right: 16px;
+    z-index: 50;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Completion screen */
+  .completion-emoji { font-size: 6rem; margin-bottom: 16px; }
+  .completion-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: var(--purple);
+    margin-bottom: 10px;
+  }
+  .completion-stats {
+    font-size: 1.1rem; color: #64748B; font-weight: 600;
+    margin-bottom: 30px; line-height: 2;
+  }
+
+  /* Responsive */
+  @media (max-width: 400px) {
+    .welcome-title { font-size: 1.5rem; }
+    .question-display { font-size: 1.8rem; }
+    .answer-btn { font-size: 1rem; padding: 8px 8px; min-height: 40px; }
+    .answer-btn.sentence-opt { font-size: 0.85rem; padding: 7px 8px; min-height: 34px; }
+    .hud-name { font-size: 0.9rem; }
+    .passage-text { font-size: 0.8rem; padding: 8px 10px; max-height: 24vh; }
+    .passage-question { font-size: 0.95rem; }
+    .question-card { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-shapes">
+  <div class="bg-shape"></div>
+  <div class="bg-shape"></div>
+  <div class="bg-shape"></div>
+  <div class="bg-shape"></div>
+  <div class="bg-shape"></div>
+</div>
+
+<!-- HUD -->
+<div class="hud" id="hud" style="display:none;">
+  <div class="hud-name">Lillian's Adventure</div>
+  <div class="hud-stats">
+    <div class="hud-stat"><span class="emoji">⭐</span><span id="hud-points">0</span></div>
+    <div class="hud-stat"><span class="emoji">🏆</span>Lv <span id="hud-level">1</span></div>
+  </div>
+</div>
+<div class="progress-wrap" id="progress-wrap" style="display:none;">
+  <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+</div>
+
+<div class="game-container">
+
+  <!-- WELCOME SCREEN -->
+  <div class="screen active" id="screen-welcome">
+    <div class="welcome-mascot">📚</div>
+    <div class="welcome-title">Lillian's Reading Adventure!</div>
+    <div class="welcome-sub">Tap the right answers to earn stars!</div>
+    <button class="btn-play" id="btn-start" onclick="startGame()">Let's Read!</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen" id="screen-game">
+    <div class="streak-bar" id="streak-bar">
+      <div class="streak-star" id="ss1">⭐</div>
+      <div class="streak-star" id="ss2">⭐</div>
+      <div class="streak-star" id="ss3">⭐</div>
+      <div class="streak-star" id="ss4">⭐</div>
+      <div class="streak-star" id="ss5">⭐</div>
+    </div>
+    <div class="question-card">
+      <div class="question-prompt" id="q-prompt">Tap the letter</div>
+      <div class="question-display" id="q-display"></div>
+      <div class="question-hint" id="q-hint"></div>
+    </div>
+    <div class="feedback" id="feedback">&nbsp;</div>
+    <div class="answers-grid" id="answers-grid"></div>
+  </div>
+
+  <!-- COMPLETION SCREEN -->
+  <div class="screen" id="screen-complete">
+    <div class="completion-emoji">🎉🏆🌟</div>
+    <div class="completion-title">Amazing Job, Lillian!</div>
+    <div class="completion-stats" id="completion-stats"></div>
+    <button class="btn-play" onclick="resetGame()">Play Again!</button>
+  </div>
+</div>
+
+<!-- LEVEL UP OVERLAY -->
+<div class="overlay" id="overlay-levelup">
+  <div class="levelup-card">
+    <div class="levelup-emoji" id="lu-emoji">🎉</div>
+    <div class="levelup-title" id="lu-title">Level Up!</div>
+    <div class="levelup-msg" id="lu-msg">You're doing amazing, Lillian!</div>
+    <div class="video-container" id="lu-video-container">
+      <div class="video-placeholder" id="lu-video-placeholder">
+        <div class="emoji">🎬</div>
+        <div>Video reward coming soon!</div>
+      </div>
+    </div>
+    <button class="btn-continue" onclick="closeLevelUp()">Keep Reading! ➜</button>
+  </div>
+</div>
+
+<!-- Audio context for simple sounds -->
+<button class="sound-toggle" id="sound-toggle" onclick="toggleSound()">🔊</button>
+
+<script>
+// ============================================================
+//  LILLIAN'S READING ADVENTURE - Game Engine
+// ============================================================
+
+// --- State ---
+let points = 0;
+let level = 1;
+let streak = 0;
+let questionsInLevel = 0;
+let totalCorrect = 0;
+let totalQuestions = 0;
+let soundOn = true;
+let isAnswering = false;
+const recentQuestions = new Set();
+
+const POINTS_PER_CORRECT = 10;
+const STREAK_BONUS = 5;
+const POINTS_TO_LEVEL_UP = 50; // points needed per level
+const MAX_LEVEL = 10;
+
+// --- YouTube Video Rewards (one per level-up) ---
+// Replace these placeholder URLs with real YouTube embed links
+const VIDEO_POOL = [
+  "https://www.youtube.com/embed/fIgSw_26Nko?autoplay=1",
+  "https://www.youtube.com/embed/YVVTZgwYwVo?autoplay=1",
+  "https://www.youtube.com/embed/ZG_k5CSYKhg?autoplay=1",
+  "https://www.youtube.com/embed/Xlt-YtaNBgE?autoplay=1",
+  "https://www.youtube.com/embed/yygb07m-8Wo?autoplay=1",
+  "https://www.youtube.com/embed/PPHxyyubleg?autoplay=1",
+  "https://www.youtube.com/embed/bvWRMAU6V-c?autoplay=1",
+  "https://www.youtube.com/embed/Yp5nPGWWMh4?autoplay=1",
+  "https://www.youtube.com/embed/w0HxMhXSgXo?autoplay=1",
+];
+
+// --- Encouragement messages ---
+const CORRECT_MESSAGES = [
+  "Great job, Lillian! ⭐", "You got it! 🌟", "Awesome! 🎉",
+  "Super reader! 📚", "Way to go! 💪", "You're so smart! 🧠",
+  "Perfect! 🌈", "Yay Lillian! 💖", "Fantastic! ✨", "Wow! 🦄"
+];
+const WRONG_MESSAGES = [
+  "Try again! 💜", "Almost! Keep going! 🌸", "You can do it! 💪",
+  "So close! Try again! 🌟", "Oops! One more try! 😊"
+];
+const LEVELUP_MESSAGES = [
+  "You're a reading superstar!",
+  "Lillian, you're amazing!",
+  "Look how smart you are!",
+  "You're learning so fast!",
+  "What a brilliant reader!",
+  "You make reading look easy!",
+  "Keep shining, Lillian!",
+  "Nothing can stop you!",
+  "You're on fire! 🔥",
+];
+
+// ============================================================
+//  QUESTION DATA - Organized by difficulty tier
+//  Lillian knows her letters and can read sentences,
+//  so we start with sentences and scale UP from there.
+// ============================================================
+
+// TIER 1 (Levels 1-2): Picture Words + Simple Fill-in-the-Blank
+const PICTURE_WORDS = [
+  { word: "apple", emoji: "🍎" }, { word: "banana", emoji: "🍌" }, { word: "flower", emoji: "🌸" },
+  { word: "rainbow", emoji: "🌈" }, { word: "fish", emoji: "🐟" }, { word: "frog", emoji: "🐸" },
+  { word: "moon", emoji: "🌙" }, { word: "tree", emoji: "🌳" }, { word: "cake", emoji: "🎂" },
+  { word: "house", emoji: "🏠" }, { word: "cloud", emoji: "☁️" }, { word: "candy", emoji: "🍬" },
+  { word: "bird", emoji: "🐦" }, { word: "book", emoji: "📖" }, { word: "horse", emoji: "🐴" },
+  { word: "water", emoji: "💧" }, { word: "pizza", emoji: "🍕" }, { word: "tiger", emoji: "🐯" },
+  { word: "train", emoji: "🚂" }, { word: "butterfly", emoji: "🦋" }, { word: "dolphin", emoji: "🐬" },
+  { word: "guitar", emoji: "🎸" }, { word: "rocket", emoji: "🚀" }, { word: "princess", emoji: "👸" },
+  { word: "cat", emoji: "🐱" }, { word: "dog", emoji: "🐶" }, { word: "pig", emoji: "🐷" },
+  { word: "cow", emoji: "🐄" }, { word: "duck", emoji: "🦆" }, { word: "bear", emoji: "🐻" },
+  { word: "snake", emoji: "🐍" }, { word: "mouse", emoji: "🐭" }, { word: "rabbit", emoji: "🐰" },
+  { word: "sheep", emoji: "🐑" }, { word: "chicken", emoji: "🐔" }, { word: "penguin", emoji: "🐧" },
+  { word: "elephant", emoji: "🐘" }, { word: "monkey", emoji: "🐵" }, { word: "lion", emoji: "🦁" },
+  { word: "dragon", emoji: "🐉" }, { word: "unicorn", emoji: "🦄" }, { word: "crown", emoji: "👑" },
+  { word: "heart", emoji: "❤️" }, { word: "star", emoji: "⭐" }, { word: "sun", emoji: "☀️" },
+  { word: "snow", emoji: "❄️" }, { word: "fire", emoji: "🔥" }, { word: "ocean", emoji: "🌊" },
+  { word: "mountain", emoji: "⛰️" }, { word: "strawberry", emoji: "🍓" }, { word: "grapes", emoji: "🍇" },
+  { word: "corn", emoji: "🌽" }, { word: "carrot", emoji: "🥕" }, { word: "cookie", emoji: "🍪" },
+  { word: "donut", emoji: "🍩" }, { word: "cheese", emoji: "🧀" }, { word: "popcorn", emoji: "🍿" },
+  { word: "car", emoji: "🚗" }, { word: "airplane", emoji: "✈️" }, { word: "bicycle", emoji: "🚲" },
+  { word: "boat", emoji: "⛵" }, { word: "bus", emoji: "🚌" }, { word: "helicopter", emoji: "🚁" },
+  { word: "soccer", emoji: "⚽" }, { word: "basketball", emoji: "🏀" }, { word: "baseball", emoji: "⚾" },
+  { word: "diamond", emoji: "💎" }, { word: "castle", emoji: "🏰" }, { word: "robot", emoji: "🤖" },
+  { word: "ghost", emoji: "👻" }, { word: "pumpkin", emoji: "🎃" }, { word: "present", emoji: "🎁" },
+  { word: "balloon", emoji: "🎈" }, { word: "umbrella", emoji: "☂️" }, { word: "rainbow", emoji: "🌈" },
+  { word: "turtle", emoji: "🐢" }, { word: "whale", emoji: "🐳" }, { word: "octopus", emoji: "🐙" },
+  { word: "crab", emoji: "🦀" }, { word: "bee", emoji: "🐝" }, { word: "ladybug", emoji: "🐞" },
+  { word: "spider", emoji: "🕷️" }, { word: "bat", emoji: "🦇" }, { word: "owl", emoji: "🦉" },
+  { word: "flamingo", emoji: "🦩" }, { word: "parrot", emoji: "🦜" }, { word: "peacock", emoji: "🦚" },
+];
+
+const SIMPLE_SENTENCES = [
+  { prompt: "🐱 The ___ sat on a mat.", answer: "cat", options: ["cat", "hat", "bat", "rat"] },
+  { prompt: "☀️ The ___ is bright.", answer: "sun", options: ["sun", "fun", "run", "bun"] },
+  { prompt: "🐶 I love my ___.", answer: "dog", options: ["dog", "log", "fog", "hog"] },
+  { prompt: "🐟 The ___ can swim.", answer: "fish", options: ["fish", "dish", "wish", "swish"] },
+  { prompt: "🌳 The ___ is tall.", answer: "tree", options: ["tree", "free", "three", "see"] },
+  { prompt: "📖 I read a ___.", answer: "book", options: ["book", "look", "cook", "hook"] },
+  { prompt: "🎂 The ___ is yummy.", answer: "cake", options: ["cake", "lake", "make", "take"] },
+  { prompt: "🐸 The ___ can hop.", answer: "frog", options: ["frog", "log", "dog", "fog"] },
+  { prompt: "⭐ I see a ___.", answer: "star", options: ["star", "car", "far", "jar"] },
+  { prompt: "🌈 Look at the ___!", answer: "rainbow", options: ["rainbow", "window", "pillow", "yellow"] },
+  { prompt: "🐦 A ___ can fly.", answer: "bird", options: ["bird", "word", "herd", "third"] },
+  { prompt: "🍎 I eat an ___.", answer: "apple", options: ["apple", "table", "maple", "able"] },
+  { prompt: "🏠 I live in a ___.", answer: "house", options: ["house", "mouse", "blouse", "grouse"] },
+  { prompt: "🌙 The ___ comes at night.", answer: "moon", options: ["moon", "soon", "spoon", "noon"] },
+  { prompt: "🍕 I like to eat ___.", answer: "pizza", options: ["pizza", "pasta", "salad", "bread"] },
+  { prompt: "🚂 The ___ goes choo choo.", answer: "train", options: ["train", "rain", "brain", "main"] },
+  { prompt: "💧 I drink ___.", answer: "water", options: ["water", "later", "skater", "hater"] },
+  { prompt: "🦋 The ___ has pretty wings.", answer: "butterfly", options: ["butterfly", "dragonfly", "ladybug", "bumblebee"] },
+  { prompt: "🐻 The ___ lives in the woods.", answer: "bear", options: ["bear", "deer", "hare", "chair"] },
+  { prompt: "🐍 The ___ has no legs.", answer: "snake", options: ["snake", "snail", "skate", "shake"] },
+  { prompt: "🐘 The ___ is very big.", answer: "elephant", options: ["elephant", "alligator", "dragonfly", "butterfly"] },
+  { prompt: "🦁 The ___ is the king of animals.", answer: "lion", options: ["lion", "tiger", "bear", "wolf"] },
+  { prompt: "🐵 The ___ loves bananas.", answer: "monkey", options: ["monkey", "donkey", "turkey", "bunny"] },
+  { prompt: "🐧 A ___ lives in the cold.", answer: "penguin", options: ["penguin", "parrot", "pigeon", "pelican"] },
+  { prompt: "🐢 The ___ moves very slowly.", answer: "turtle", options: ["turtle", "rabbit", "squirrel", "beetle"] },
+  { prompt: "🐳 The ___ swims in the ocean.", answer: "whale", options: ["whale", "snail", "scale", "trail"] },
+  { prompt: "🌊 The ___ has big waves.", answer: "ocean", options: ["ocean", "garden", "forest", "desert"] },
+  { prompt: "⛰️ The ___ is very tall and has snow on top.", answer: "mountain", options: ["mountain", "fountain", "building", "tower"] },
+  { prompt: "🔥 The ___ is very hot.", answer: "fire", options: ["fire", "wire", "tire", "hire"] },
+  { prompt: "❄️ The ___ is cold and white.", answer: "snow", options: ["snow", "glow", "flow", "grow"] },
+  { prompt: "🐝 A ___ makes honey.", answer: "bee", options: ["bee", "fly", "ant", "bug"] },
+  { prompt: "🦉 The ___ says hoo hoo.", answer: "owl", options: ["owl", "howl", "growl", "fowl"] },
+  { prompt: "🐭 The ___ likes cheese.", answer: "mouse", options: ["mouse", "moose", "goose", "house"] },
+  { prompt: "🐰 The ___ hops in the grass.", answer: "rabbit", options: ["rabbit", "parrot", "carrot", "ferret"] },
+  { prompt: "🐑 The ___ gives us wool.", answer: "sheep", options: ["sheep", "sleep", "sweep", "steep"] },
+  { prompt: "🚗 I ride in a ___.", answer: "car", options: ["car", "jar", "bar", "tar"] },
+  { prompt: "✈️ The ___ flies in the sky.", answer: "airplane", options: ["airplane", "airport", "airship", "airmail"] },
+  { prompt: "⛵ The ___ floats on water.", answer: "boat", options: ["boat", "coat", "goat", "moat"] },
+  { prompt: "🎈 The ___ floats up high.", answer: "balloon", options: ["balloon", "baboon", "bassoon", "cartoon"] },
+  { prompt: "🎁 I got a ___ for my birthday.", answer: "present", options: ["present", "pleasant", "pheasant", "crescent"] },
+  { prompt: "🍪 I love to eat a ___.", answer: "cookie", options: ["cookie", "noodle", "poodle", "doodle"] },
+  { prompt: "🍩 The ___ has a hole in it.", answer: "donut", options: ["donut", "peanut", "walnut", "coconut"] },
+  { prompt: "🏰 The king lives in a ___.", answer: "castle", options: ["castle", "cabin", "cottage", "cave"] },
+];
+
+// TIER 2 (Levels 3-4): Harder Fill-in-the-Blank + Rhyming Words
+const HARDER_SENTENCES = [
+  { prompt: "She ___ her hands before eating.", answer: "washes", options: ["washes", "wishes", "pushes", "rushes"] },
+  { prompt: "The baby was ___ all night.", answer: "sleeping", options: ["sleeping", "slipping", "skipping", "snapping"] },
+  { prompt: "We ___ to the park after school.", answer: "walked", options: ["walked", "talked", "waked", "baked"] },
+  { prompt: "The puppy likes to ___ its tail.", answer: "wag", options: ["wag", "bag", "tag", "rag"] },
+  { prompt: "Mom ___ me a bedtime story.", answer: "reads", options: ["reads", "feeds", "leads", "seeds"] },
+  { prompt: "I ___ my shoes before going outside.", answer: "tied", options: ["tied", "tried", "cried", "dried"] },
+  { prompt: "The cat ___ up the tree.", answer: "climbed", options: ["climbed", "cleaned", "clapped", "closed"] },
+  { prompt: "We ___ happy songs together.", answer: "sing", options: ["sing", "ring", "king", "wing"] },
+  { prompt: "The ice cream is very ___.", answer: "cold", options: ["cold", "bold", "gold", "told"] },
+  { prompt: "She ___ the ball to her friend.", answer: "threw", options: ["threw", "grew", "blew", "drew"] },
+  { prompt: "The flower ___ in the garden.", answer: "grows", options: ["grows", "glows", "flows", "shows"] },
+  { prompt: "I can ___ really fast!", answer: "run", options: ["run", "fun", "sun", "bun"] },
+  { prompt: "Please ___ the door when you leave.", answer: "close", options: ["close", "chose", "those", "nose"] },
+  { prompt: "The stars ___ at night.", answer: "shine", options: ["shine", "mine", "line", "fine"] },
+  { prompt: "We eat ___ for breakfast.", answer: "cereal", options: ["cereal", "carrots", "cookies", "candy"] },
+  { prompt: "She ___ a picture of a house.", answer: "drew", options: ["drew", "blew", "flew", "knew"] },
+  { prompt: "The bird ___ a nest in the tree.", answer: "built", options: ["built", "spilt", "quilt", "tilt"] },
+  { prompt: "Dad ___ the car to work.", answer: "drives", options: ["drives", "dives", "hives", "lives"] },
+  { prompt: "I ___ my teeth every morning.", answer: "brush", options: ["brush", "crush", "blush", "flush"] },
+  { prompt: "The bunny ___ across the yard.", answer: "hopped", options: ["hopped", "stopped", "dropped", "chopped"] },
+  { prompt: "We ___ our hands when we are happy.", answer: "clap", options: ["clap", "slap", "snap", "flap"] },
+  { prompt: "She ___ the answer to the question.", answer: "knew", options: ["knew", "blew", "grew", "stew"] },
+  { prompt: "The wind ___ the leaves around.", answer: "blew", options: ["blew", "flew", "drew", "grew"] },
+  { prompt: "I ___ a letter to my grandma.", answer: "wrote", options: ["wrote", "note", "vote", "tote"] },
+  { prompt: "He ___ the rope very tight.", answer: "pulled", options: ["pulled", "pushed", "punched", "puffed"] },
+  { prompt: "The frog ___ into the pond.", answer: "jumped", options: ["jumped", "bumped", "pumped", "dumped"] },
+  { prompt: "She ___ the candles on her cake.", answer: "blew", options: ["blew", "flew", "knew", "grew"] },
+  { prompt: "The teacher ___ us a new game.", answer: "taught", options: ["taught", "caught", "bought", "thought"] },
+  { prompt: "We ___ a snowman in the yard.", answer: "built", options: ["built", "spilt", "guilt", "tilt"] },
+  { prompt: "The dog ___ a hole in the yard.", answer: "dug", options: ["dug", "bug", "hug", "rug"] },
+  { prompt: "I ___ my room before dinner.", answer: "cleaned", options: ["cleaned", "leaned", "beaned", "meaned"] },
+  { prompt: "She ___ the book on the shelf.", answer: "placed", options: ["placed", "raced", "faced", "laced"] },
+  { prompt: "The baby ___ when she was happy.", answer: "laughed", options: ["laughed", "coughed", "graphed", "staffed"] },
+  { prompt: "He ___ his bike to school.", answer: "rode", options: ["rode", "code", "mode", "load"] },
+  { prompt: "The rain ___ on the roof.", answer: "pattered", options: ["pattered", "mattered", "battered", "scattered"] },
+  { prompt: "We ___ cookies for the party.", answer: "baked", options: ["baked", "raked", "faked", "caked"] },
+];
+
+const RHYMING_QUESTIONS = [
+  { prompt: "Which word rhymes with CAT?", answer: "bat", options: ["bat", "dog", "cup", "red"] },
+  { prompt: "Which word rhymes with CAKE?", answer: "lake", options: ["lake", "book", "tree", "hand"] },
+  { prompt: "Which word rhymes with NIGHT?", answer: "light", options: ["light", "nose", "jump", "cloud"] },
+  { prompt: "Which word rhymes with SING?", answer: "ring", options: ["ring", "sand", "milk", "frog"] },
+  { prompt: "Which word rhymes with HOUSE?", answer: "mouse", options: ["mouse", "horse", "cloud", "shirt"] },
+  { prompt: "Which word rhymes with TRAIN?", answer: "rain", options: ["rain", "boat", "tree", "lamp"] },
+  { prompt: "Which word rhymes with BOOK?", answer: "cook", options: ["cook", "ball", "fish", "door"] },
+  { prompt: "Which word rhymes with STAR?", answer: "car", options: ["car", "sun", "hat", "bed"] },
+  { prompt: "Which word rhymes with JUMP?", answer: "bump", options: ["bump", "skip", "walk", "spin"] },
+  { prompt: "Which word rhymes with TREE?", answer: "free", options: ["free", "tall", "big", "old"] },
+  { prompt: "Which word rhymes with KING?", answer: "wing", options: ["wing", "crown", "queen", "gold"] },
+  { prompt: "Which word rhymes with BOAT?", answer: "coat", options: ["coat", "ship", "lake", "fish"] },
+  { prompt: "Which word rhymes with MAKE?", answer: "bake", options: ["bake", "cook", "mix", "eat"] },
+  { prompt: "Which word rhymes with FUNNY?", answer: "bunny", options: ["bunny", "silly", "happy", "goofy"] },
+  { prompt: "Which word rhymes with BEAR?", answer: "hair", options: ["hair", "paws", "claw", "growl"] },
+  { prompt: "Which word rhymes with SHELL?", answer: "bell", options: ["bell", "beach", "sand", "wave"] },
+  { prompt: "Which word rhymes with PIG?", answer: "wig", options: ["wig", "paw", "moo", "hen"] },
+  { prompt: "Which word rhymes with ROCK?", answer: "sock", options: ["sock", "sand", "hill", "mud"] },
+  { prompt: "Which word rhymes with PLANE?", answer: "crane", options: ["crane", "cloud", "bird", "wing"] },
+  { prompt: "Which word rhymes with FISH?", answer: "dish", options: ["dish", "pond", "swim", "hook"] },
+  { prompt: "Which word rhymes with CLOCK?", answer: "block", options: ["block", "watch", "time", "hand"] },
+  { prompt: "Which word rhymes with SNAIL?", answer: "tail", options: ["tail", "shell", "slow", "leaf"] },
+  { prompt: "Which word rhymes with MOUSE?", answer: "house", options: ["house", "cheese", "trap", "hole"] },
+  { prompt: "Which word rhymes with PAN?", answer: "man", options: ["man", "pot", "lid", "cook"] },
+  { prompt: "Which word rhymes with COLD?", answer: "gold", options: ["gold", "snow", "ice", "wind"] },
+  { prompt: "Which word rhymes with DREAM?", answer: "cream", options: ["cream", "sleep", "night", "dark"] },
+  { prompt: "Which word rhymes with NAIL?", answer: "mail", options: ["mail", "hand", "tool", "wood"] },
+  { prompt: "Which word rhymes with SLIDE?", answer: "hide", options: ["hide", "park", "swing", "play"] },
+  { prompt: "Which word rhymes with SPOON?", answer: "moon", options: ["moon", "fork", "plate", "bowl"] },
+  { prompt: "Which word rhymes with TRUCK?", answer: "duck", options: ["duck", "wheel", "road", "fast"] },
+  { prompt: "Which word rhymes with HILL?", answer: "fill", options: ["fill", "grass", "rock", "dirt"] },
+  { prompt: "Which word rhymes with BRIGHT?", answer: "kite", options: ["kite", "dark", "glow", "lamp"] },
+  { prompt: "Which word rhymes with NOSE?", answer: "toes", options: ["toes", "face", "eyes", "chin"] },
+  { prompt: "Which word rhymes with GAME?", answer: "name", options: ["name", "play", "win", "fun"] },
+  { prompt: "Which word rhymes with SLEEP?", answer: "deep", options: ["deep", "rest", "nap", "bed"] },
+  { prompt: "Which word rhymes with FROG?", answer: "log", options: ["log", "pond", "hop", "wet"] },
+];
+
+// TIER 3 (Levels 5-6): Vocabulary & Word Meanings + Antonyms
+const VOCAB_QUESTIONS = [
+  { prompt: "What does HUGE mean?", answer: "very big", options: ["very big", "very small", "very fast", "very old"] },
+  { prompt: "What does TINY mean?", answer: "very small", options: ["very small", "very tall", "very loud", "very dark"] },
+  { prompt: "What does SPRINT mean?", answer: "run fast", options: ["run fast", "sit down", "sleep well", "eat lunch"] },
+  { prompt: "What does GRIN mean?", answer: "smile", options: ["smile", "cry", "shout", "sleep"] },
+  { prompt: "What does FURIOUS mean?", answer: "very angry", options: ["very angry", "very happy", "very tired", "very cold"] },
+  { prompt: "What does CHILLY mean?", answer: "a little cold", options: ["a little cold", "a little hot", "a little sad", "a little funny"] },
+  { prompt: "What does BRAVE mean?", answer: "not afraid", options: ["not afraid", "not happy", "not fast", "not nice"] },
+  { prompt: "What does GIGGLE mean?", answer: "a little laugh", options: ["a little laugh", "a big cry", "a loud yell", "a short nap"] },
+  { prompt: "What does SHOVE mean?", answer: "push hard", options: ["push hard", "pull softly", "run away", "stand still"] },
+  { prompt: "What does GOBBLE mean?", answer: "eat fast", options: ["eat fast", "run slow", "talk loud", "sleep long"] },
+  { prompt: "What does WEEP mean?", answer: "cry", options: ["cry", "laugh", "sing", "dance"] },
+  { prompt: "What does DROWSY mean?", answer: "sleepy", options: ["sleepy", "hungry", "angry", "excited"] },
+  { prompt: "What does PEEK mean?", answer: "a quick look", options: ["a quick look", "a loud shout", "a long nap", "a big jump"] },
+  { prompt: "What does REPAIR mean?", answer: "fix", options: ["fix", "break", "throw", "hide"] },
+  { prompt: "What does TUMBLE mean?", answer: "fall down", options: ["fall down", "stand up", "sit still", "fly high"] },
+  { prompt: "What does ODOR mean?", answer: "a smell", options: ["a smell", "a sound", "a color", "a taste"] },
+  { prompt: "What does ANCIENT mean?", answer: "very old", options: ["very old", "very new", "very big", "very far"] },
+  { prompt: "What does GLARE mean?", answer: "stare in an angry way", options: ["stare in an angry way", "smile at someone", "run away fast", "whisper softly"] },
+  { prompt: "What does SWIFT mean?", answer: "very fast", options: ["very fast", "very slow", "very tall", "very shy"] },
+  { prompt: "What does WHISPER mean?", answer: "talk very softly", options: ["talk very softly", "yell very loud", "run very fast", "eat very slow"] },
+  { prompt: "What does SHATTER mean?", answer: "break into pieces", options: ["break into pieces", "put together", "make bigger", "paint over"] },
+  { prompt: "What does SCARCE mean?", answer: "hard to find", options: ["hard to find", "easy to see", "fun to play", "nice to eat"] },
+  { prompt: "What does MEND mean?", answer: "fix something broken", options: ["fix something broken", "break something new", "hide something", "throw away"] },
+  { prompt: "What does PLEAD mean?", answer: "beg or ask nicely", options: ["beg or ask nicely", "yell loudly", "run away", "fall asleep"] },
+  { prompt: "What does DAMP mean?", answer: "a little wet", options: ["a little wet", "very dry", "super hot", "really cold"] },
+  { prompt: "What does SELDOM mean?", answer: "not very often", options: ["not very often", "all the time", "every day", "right now"] },
+  { prompt: "What does STUMBLE mean?", answer: "almost fall", options: ["almost fall", "jump high", "run fast", "sit down"] },
+  { prompt: "What does CLEVER mean?", answer: "very smart", options: ["very smart", "very silly", "very slow", "very loud"] },
+  { prompt: "What does VANISH mean?", answer: "disappear", options: ["disappear", "appear", "grow", "shrink"] },
+  { prompt: "What does SOGGY mean?", answer: "very wet and soft", options: ["very wet and soft", "very dry and hard", "very hot", "very cold"] },
+  { prompt: "What does GRUMPY mean?", answer: "in a bad mood", options: ["in a bad mood", "very happy", "really tired", "super hungry"] },
+  { prompt: "What does STURDY mean?", answer: "strong and solid", options: ["strong and solid", "weak and thin", "soft and fluffy", "small and light"] },
+  { prompt: "What does EAGER mean?", answer: "excited and ready", options: ["excited and ready", "bored and tired", "scared and shy", "angry and loud"] },
+  { prompt: "What does HOLLOW mean?", answer: "empty inside", options: ["empty inside", "full of water", "very heavy", "really bright"] },
+  { prompt: "What does FRIGID mean?", answer: "extremely cold", options: ["extremely cold", "extremely hot", "extremely loud", "extremely big"] },
+  { prompt: "What does FETCH mean?", answer: "go get something", options: ["go get something", "throw away", "hide from", "break apart"] },
+];
+
+const ANTONYM_QUESTIONS = [
+  { prompt: "What is the OPPOSITE of hot?", answer: "cold", options: ["cold", "warm", "red", "big"] },
+  { prompt: "What is the OPPOSITE of happy?", answer: "sad", options: ["sad", "glad", "mad", "bad"] },
+  { prompt: "What is the OPPOSITE of big?", answer: "small", options: ["small", "tall", "wide", "long"] },
+  { prompt: "What is the OPPOSITE of fast?", answer: "slow", options: ["slow", "quick", "loud", "hard"] },
+  { prompt: "What is the OPPOSITE of up?", answer: "down", options: ["down", "over", "under", "left"] },
+  { prompt: "What is the OPPOSITE of dark?", answer: "light", options: ["light", "black", "night", "shadow"] },
+  { prompt: "What is the OPPOSITE of open?", answer: "close", options: ["close", "push", "lock", "shut"] },
+  { prompt: "What is the OPPOSITE of loud?", answer: "quiet", options: ["quiet", "soft", "tiny", "slow"] },
+  { prompt: "What is the OPPOSITE of old?", answer: "new", options: ["new", "big", "tall", "next"] },
+  { prompt: "What is the OPPOSITE of wet?", answer: "dry", options: ["dry", "hot", "cold", "hard"] },
+  { prompt: "What is the OPPOSITE of empty?", answer: "full", options: ["full", "half", "heavy", "big"] },
+  { prompt: "What is the OPPOSITE of asleep?", answer: "awake", options: ["awake", "tired", "quiet", "calm"] },
+  { prompt: "What is the OPPOSITE of soft?", answer: "hard", options: ["hard", "rough", "loud", "sharp"] },
+  { prompt: "What is the OPPOSITE of begin?", answer: "end", options: ["end", "stop", "wait", "start"] },
+  { prompt: "What is the OPPOSITE of laugh?", answer: "cry", options: ["cry", "shout", "scream", "yell"] },
+  { prompt: "What is the OPPOSITE of push?", answer: "pull", options: ["pull", "lift", "drag", "drop"] },
+  { prompt: "What is the OPPOSITE of day?", answer: "night", options: ["night", "noon", "dawn", "morning"] },
+  { prompt: "What is the OPPOSITE of love?", answer: "hate", options: ["hate", "like", "want", "fear"] },
+  { prompt: "What is the OPPOSITE of brave?", answer: "scared", options: ["scared", "angry", "silly", "loud"] },
+  { prompt: "What is the OPPOSITE of tall?", answer: "short", options: ["short", "wide", "flat", "thin"] },
+  { prompt: "What is the OPPOSITE of clean?", answer: "dirty", options: ["dirty", "messy", "dusty", "muddy"] },
+  { prompt: "What is the OPPOSITE of strong?", answer: "weak", options: ["weak", "small", "thin", "tired"] },
+  { prompt: "What is the OPPOSITE of right?", answer: "wrong", options: ["wrong", "left", "bad", "lost"] },
+  { prompt: "What is the OPPOSITE of first?", answer: "last", options: ["last", "next", "second", "end"] },
+  { prompt: "What is the OPPOSITE of give?", answer: "take", options: ["take", "hold", "grab", "keep"] },
+  { prompt: "What is the OPPOSITE of smile?", answer: "frown", options: ["frown", "cry", "yell", "pout"] },
+  { prompt: "What is the OPPOSITE of above?", answer: "below", options: ["below", "beside", "behind", "between"] },
+  { prompt: "What is the OPPOSITE of remember?", answer: "forget", options: ["forget", "ignore", "sleep", "dream"] },
+  { prompt: "What is the OPPOSITE of win?", answer: "lose", options: ["lose", "quit", "stop", "fail"] },
+  { prompt: "What is the OPPOSITE of summer?", answer: "winter", options: ["winter", "spring", "fall", "rain"] },
+  { prompt: "What is the OPPOSITE of always?", answer: "never", options: ["never", "sometimes", "maybe", "often"] },
+  { prompt: "What is the OPPOSITE of inside?", answer: "outside", options: ["outside", "beside", "behind", "under"] },
+  { prompt: "What is the OPPOSITE of friend?", answer: "enemy", options: ["enemy", "stranger", "neighbor", "brother"] },
+  { prompt: "What is the OPPOSITE of sweet?", answer: "sour", options: ["sour", "salty", "spicy", "bland"] },
+  { prompt: "What is the OPPOSITE of heavy?", answer: "light", options: ["light", "thin", "small", "flat"] },
+  { prompt: "What is the OPPOSITE of awake?", answer: "asleep", options: ["asleep", "tired", "bored", "calm"] },
+];
+
+// TIER 4 (Levels 7-8): Short Reading Passages with Comprehension
+const PASSAGE_QUESTIONS = [
+  { passage: "Sam has a red ball. He likes to throw it in the yard. His dog Max runs to get the ball every time.", question: "Who gets the ball?", answer: "Max the dog", options: ["Max the dog", "Sam", "A cat", "Mom"] },
+  { passage: "Lily went to the store with her mom. They got milk, bread, and eggs. Lily also picked out a box of her favorite cereal.", question: "Where did Lily go?", answer: "the store", options: ["the store", "the park", "school", "the library"] },
+  { passage: "It was raining outside. Ben put on his boots and his raincoat. He jumped in every puddle he could find!", question: "What was the weather like?", answer: "rainy", options: ["rainy", "sunny", "snowy", "windy"] },
+  { passage: "Anna drew a picture of her family. She used red for her mom's dress and blue for her dad's shirt. She drew her baby brother in a green hat.", question: "What color was dad's shirt?", answer: "blue", options: ["blue", "red", "green", "yellow"] },
+  { passage: "The cat sat on the windowsill. She watched the birds fly by. When a squirrel ran across the yard, the cat's tail began to swish back and forth.", question: "What made the cat's tail swish?", answer: "a squirrel", options: ["a squirrel", "a bird", "the wind", "a dog"] },
+  { passage: "Jake had three pets: a fish, a hamster, and a turtle. The fish lived in a tank. The hamster loved to run on its wheel at night.", question: "How many pets did Jake have?", answer: "three", options: ["three", "two", "four", "one"] },
+  { passage: "Emma helped her grandma bake cookies. They mixed flour, sugar, and butter together. The best part was adding the chocolate chips!", question: "What did Emma help bake?", answer: "cookies", options: ["cookies", "a cake", "bread", "a pie"] },
+  { passage: "The class went on a field trip to the zoo. They saw lions, monkeys, and penguins. The penguins were everyone's favorite because they were so funny.", question: "What was everyone's favorite animal?", answer: "penguins", options: ["penguins", "lions", "monkeys", "bears"] },
+  { passage: "Rosa planted a seed in a pot. She gave it water and put it in the sun. After two weeks, a little green plant started to grow!", question: "How long until the plant grew?", answer: "two weeks", options: ["two weeks", "one day", "three months", "one year"] },
+  { passage: "Tom could not find his shoes. He looked under the bed and in the closet. Finally, he found them behind the couch in the living room!", question: "Where were Tom's shoes?", answer: "behind the couch", options: ["behind the couch", "under the bed", "in the closet", "by the door"] },
+  { passage: "It was Mia's birthday. She got a new bike from her parents. It was purple with a bell on it. She rode it around the block five times!", question: "What color was the bike?", answer: "purple", options: ["purple", "red", "blue", "pink"] },
+  { passage: "The farmer had chickens, cows, and pigs. Every morning he collected eggs from the chickens. The cows gave milk and the pigs rolled in the mud.", question: "What did the farmer collect in the morning?", answer: "eggs", options: ["eggs", "milk", "mud", "hay"] },
+  { passage: "Nora's class had a pet hamster named Buttons. They took turns feeding him every day. On Fridays, someone got to take Buttons home for the weekend.", question: "What was the class pet's name?", answer: "Buttons", options: ["Buttons", "Bubbles", "Buddy", "Biscuit"] },
+  { passage: "Dad made pancakes for breakfast. He put blueberries in some and chocolate chips in others. Ella chose the ones with chocolate chips.", question: "What did Ella pick?", answer: "chocolate chip pancakes", options: ["chocolate chip pancakes", "blueberry pancakes", "plain pancakes", "waffles"] },
+  { passage: "The kite flew high above the trees. It was shaped like a dragon and had a long red tail. Kai held the string tight so it wouldn't fly away.", question: "What shape was the kite?", answer: "a dragon", options: ["a dragon", "a bird", "a star", "a box"] },
+  { passage: "Grandpa took Luca fishing at the lake. They sat in a small blue boat. Luca caught two fish but Grandpa caught four.", question: "How many fish did Grandpa catch?", answer: "four", options: ["four", "two", "six", "one"] },
+  { passage: "Maya loves to paint. Her favorite color is orange. She painted an orange sunset, an orange cat, and an orange pumpkin all in one day!", question: "What is Maya's favorite color?", answer: "orange", options: ["orange", "blue", "red", "yellow"] },
+  { passage: "The school bus picks up kids at 7:30 every morning. First it stops at Pine Street, then Oak Street, then Maple Street. Tina lives on Oak Street.", question: "Which street does Tina live on?", answer: "Oak Street", options: ["Oak Street", "Pine Street", "Maple Street", "Elm Street"] },
+  { passage: "Oliver built a fort out of blankets and pillows. He used chairs to hold up the blankets. Inside the fort, he read comics with a flashlight.", question: "What did Oliver read inside the fort?", answer: "comics", options: ["comics", "a textbook", "a newspaper", "a letter"] },
+  { passage: "Grace and her brother raced to the end of the street. Grace ran as fast as she could. Her brother was faster, but only by a little bit!", question: "Who won the race?", answer: "Grace's brother", options: ["Grace's brother", "Grace", "They tied", "Nobody finished"] },
+  { passage: "The firefighters came to school to teach about fire safety. They showed the kids how to stop, drop, and roll. They also let everyone sit in the fire truck!", question: "What did the firefighters teach?", answer: "fire safety", options: ["fire safety", "how to cook", "how to swim", "how to read"] },
+  { passage: "Sophia's tooth was wiggly all day. After dinner, it finally fell out! She put it under her pillow and hoped the tooth fairy would come.", question: "Where did Sophia put her tooth?", answer: "under her pillow", options: ["under her pillow", "in a cup", "on the table", "in her pocket"] },
+  { passage: "The art teacher gave each student a ball of clay. They could make anything they wanted. Leo made a dinosaur and his friend made a car.", question: "What did Leo make?", answer: "a dinosaur", options: ["a dinosaur", "a car", "a dog", "a house"] },
+  { passage: "It snowed all night long. In the morning, the yard was covered in white. The kids made a snowman with a carrot nose and a scarf.", question: "What did they use for the snowman's nose?", answer: "a carrot", options: ["a carrot", "a stick", "a rock", "a button"] },
+  { passage: "The library had a reading contest. If you read ten books, you got a prize. Amara read twelve books and won a stuffed animal!", question: "How many books did Amara read?", answer: "twelve", options: ["twelve", "ten", "eight", "fifteen"] },
+  { passage: "Ryan's family went camping. They set up a tent near a river. At night, they roasted marshmallows and looked at the stars.", question: "Where did they set up the tent?", answer: "near a river", options: ["near a river", "on a mountain", "in a field", "by the road"] },
+  { passage: "Jenny found a ladybug on a leaf. She counted its spots — it had seven! She let it crawl on her hand before it flew away.", question: "How many spots did the ladybug have?", answer: "seven", options: ["seven", "five", "three", "ten"] },
+];
+
+// TIER 5 (Levels 9-10): Harder Comprehension with Inference & Reasoning
+const HARD_PASSAGE_QUESTIONS = [
+  { passage: "Kayla looked out the window and frowned. The sky was gray and the trees were blowing sideways. She put her kite back in the closet and picked up a puzzle instead.", question: "Why did Kayla put her kite away?", answer: "It was too stormy to fly it", options: ["It was too stormy to fly it", "The kite was broken", "She doesn't like kites", "It was bedtime"] },
+  { passage: "Marco's stomach was growling loudly. He looked at the clock and it said 12:15. He ran to the kitchen and started making a sandwich.", question: "Why was Marco making a sandwich?", answer: "He was hungry for lunch", options: ["He was hungry for lunch", "He was bored", "His mom told him to", "He wanted a snack for later"] },
+  { passage: "Ava put on her helmet and knee pads. She grabbed the handlebars and started pedaling. At first she wobbled, but soon she was going straight. Her dad clapped and cheered!", question: "What was Ava learning to do?", answer: "ride a bike", options: ["ride a bike", "ride a horse", "use a scooter", "play a game"] },
+  { passage: "Noah brought an umbrella to school even though the sun was shining. His classmates laughed. But by lunch time, dark clouds rolled in and rain poured down. Noah was the only one who stayed dry at recess.", question: "How did Noah know it would rain?", answer: "He checked the weather ahead of time", options: ["He checked the weather ahead of time", "He got lucky", "His teacher told the class", "He saw clouds in the morning"] },
+  { passage: "The library was very quiet. Sofia whispered to her friend, 'Let's pick out two books each.' They tiptoed between the tall shelves, looking at all the colorful covers.", question: "Why did Sofia whisper?", answer: "You should be quiet in the library", options: ["You should be quiet in the library", "She had a sore throat", "She was scared", "Her friend was sleeping"] },
+  { passage: "Ben's goldfish was not eating and was swimming slowly near the bottom. The water looked cloudy. Ben's dad said, 'I think it's time to clean the tank.' After they cleaned it, the fish started swimming happily again.", question: "What was wrong with the fish?", answer: "The tank water was dirty", options: ["The tank water was dirty", "The fish was old", "The fish was not hungry", "The fish was sleeping"] },
+  { passage: "Ella's class made cards for the people at the nursing home. They drew flowers and wrote kind messages inside. When they visited, the people smiled and some even cried happy tears.", question: "Why did some people cry?", answer: "They were touched by the kindness", options: ["They were touched by the kindness", "They were sad", "The cards were ugly", "They missed school"] },
+  { passage: "James counted his money: five dollars and thirty-five cents. The toy car he wanted cost six dollars. He did extra chores all week and earned one dollar. Now he had enough!", question: "How much money did James need to earn?", answer: "One dollar or less", options: ["One dollar or less", "Six dollars", "Two dollars", "Five dollars"] },
+  { passage: "Every morning, the crossing guard stands at the corner near the school. She holds up a big red sign that says STOP. When all the cars stop, she waves the children across the street.", question: "What is the crossing guard's job?", answer: "To help children cross safely", options: ["To help children cross safely", "To drive a car", "To teach a class", "To fix the road"] },
+  { passage: "Zoe noticed her plant's leaves were turning yellow and drooping. She had been watering it every day. Her mom said, 'Sometimes too much water can hurt a plant, just like too little.' Zoe decided to water it only twice a week.", question: "What was Zoe doing wrong?", answer: "Giving the plant too much water", options: ["Giving the plant too much water", "Not giving it enough sun", "Forgetting to water it", "Putting it outside"] },
+  { passage: "During show and tell, Mia brought a smooth, round rock she found at the beach. It had tiny sparkles in it. Her teacher said it might be a piece of quartz. Mia felt like she had found a treasure!", question: "Where did Mia find the rock?", answer: "at the beach", options: ["at the beach", "at the park", "in her backyard", "at school"] },
+  { passage: "Leo could hear music coming from the kitchen. He smelled something sweet baking in the oven. When he walked in, he saw balloons and a big sign that said 'SURPRISE!' It was a party just for him!", question: "What was happening in the kitchen?", answer: "A surprise party for Leo", options: ["A surprise party for Leo", "Mom was just baking", "Dad was cooking dinner", "A family meeting"] },
+  { passage: "Hannah's dog kept barking at the front door. When she opened it, no one was there. Then she looked down and saw a small box with holes in the top. Inside was a tiny kitten with a bow!", question: "Why did the box have holes?", answer: "So the kitten could breathe", options: ["So the kitten could breathe", "The box was old", "It was raining", "Someone made a mistake"] },
+  { passage: "Tyler put on his snow boots, his warmest coat, and two pairs of gloves. His mom handed him a sled. He could barely wait to get to the big hill.", question: "What was Tyler about to do?", answer: "Go sledding", options: ["Go sledding", "Build a snowman", "Go to school", "Shovel the driveway"] },
+  { passage: "The teacher said, 'Don't forget, tomorrow is crazy hair day!' That night, Piper asked her mom to spray her hair pink and put it in three ponytails. She wanted to win the silliest hair award.", question: "Why did Piper want silly hair?", answer: "It was crazy hair day at school", options: ["It was crazy hair day at school", "She always wears her hair that way", "She was going to a party", "Her mom made her"] },
+  { passage: "Carlos kept yawning during class. He could barely keep his eyes open. At recess, his friend asked why he was so tired. Carlos said his new puppy cried all night long.", question: "Why was Carlos tired?", answer: "His puppy kept him up at night", options: ["His puppy kept him up at night", "He stayed up watching TV", "He woke up too early", "He was sick"] },
+  { passage: "Ruby's sandwich tasted funny. She opened it up and saw that instead of grape jelly, someone had used mustard! She looked at her lunch bag and realized she had grabbed her dad's lunch by mistake.", question: "Why was the sandwich wrong?", answer: "She took her dad's lunch by accident", options: ["She took her dad's lunch by accident", "Mom made a mistake", "She doesn't like sandwiches", "The jelly was expired"] },
+  { passage: "The lights went out and the room was dark. Mom found some candles and matches. She said the storm must have knocked down a power line. They played board games by candlelight until the lights came back on.", question: "Why did the lights go out?", answer: "A storm knocked down a power line", options: ["A storm knocked down a power line", "Someone turned them off", "The bulbs burned out", "It was bedtime"] },
+  { passage: "Aiden noticed the cookies on the counter were missing. There were crumbs on the floor leading to his little sister's room. He found her hiding under the bed with chocolate on her face.", question: "Who ate the cookies?", answer: "His little sister", options: ["His little sister", "Aiden", "The dog", "Dad"] },
+  { passage: "The park was empty even though it was a sunny Saturday. There was yellow tape around the playground and a sign that said 'CLOSED FOR REPAIRS.' The kids had to find somewhere else to play.", question: "Why was the park empty?", answer: "It was closed for repairs", options: ["It was closed for repairs", "It was too hot", "Everyone was at school", "It was raining"] },
+  { passage: "Mila kept checking the mailbox every hour. She had sent a letter to her cousin two weeks ago and was waiting for a letter back. Finally, on Saturday, she found a purple envelope with her name on it!", question: "Why did Mila keep checking the mailbox?", answer: "She was waiting for a letter from her cousin", options: ["She was waiting for a letter from her cousin", "She lost something", "She wanted a package", "She was bored"] },
+  { passage: "Liam saw his neighbor carrying heavy grocery bags. The neighbor was also trying to hold a baby. Liam ran over and said, 'I can carry some bags for you!' The neighbor smiled and said thank you.", question: "What does this tell us about Liam?", answer: "He is kind and helpful", options: ["He is kind and helpful", "He wanted the groceries", "He was bored", "His mom told him to help"] },
+  { passage: "Ivy planted tomatoes in the spring. All summer she pulled weeds and gave the plants water. By August, she had so many tomatoes that she gave bags of them to all her neighbors!", question: "Why did Ivy have so many tomatoes?", answer: "She took good care of her garden", options: ["She took good care of her garden", "She bought them at the store", "Her neighbors gave them to her", "They grew by accident"] },
+  { passage: "When Dina opened her lunchbox, she found a note from her mom that said, 'You are going to do great on your test today! Love, Mom.' Dina smiled and felt less nervous.", question: "How did the note make Dina feel?", answer: "Less nervous and more confident", options: ["Less nervous and more confident", "Hungry", "Sad", "Confused"] },
+  { passage: "Jack saw dark clouds forming and heard thunder in the distance. He quickly picked up all the toys in the yard and brought them inside. Just as he closed the door, rain started pouring down.", question: "Why did Jack bring the toys inside?", answer: "He knew a storm was coming", options: ["He knew a storm was coming", "It was bedtime", "Mom told him to", "He was done playing"] },
+  { passage: "Nora's little brother was crying because his balloon flew away. Nora used her own money to buy him a new one at the store. He hugged her and stopped crying right away.", question: "What does this tell us about Nora?", answer: "She is a caring big sister", options: ["She is a caring big sister", "She didn't want the money", "She likes balloons", "Her mom made her do it"] },
+  { passage: "The class hamster escaped from its cage overnight. In the morning, the kids found tiny footprints in the chalk dust near the board. They followed the footprints to a pile of coats, where the hamster was sleeping!", question: "How did they find the hamster?", answer: "They followed its footprints", options: ["They followed its footprints", "They heard it squeak", "The teacher found it", "It came back on its own"] },
+];
+
+// ============================================================
+//  AUDIO - Simple Web Audio beeps (no files needed)
+// ============================================================
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playTone(freq, duration, type = "sine", volume = 0.15) {
+  if (!soundOn || !audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function sfxCorrect() {
+  playTone(523, 0.12); // C5
+  setTimeout(() => playTone(659, 0.12), 100); // E5
+  setTimeout(() => playTone(784, 0.2), 200); // G5
+}
+function sfxWrong() {
+  playTone(200, 0.25, "square", 0.08);
+}
+function sfxLevelUp() {
+  [523, 587, 659, 698, 784, 880, 988, 1047].forEach((f, i) => {
+    setTimeout(() => playTone(f, 0.15, "sine", 0.12), i * 80);
+  });
+}
+function sfxClick() {
+  playTone(440, 0.06, "sine", 0.08);
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  document.getElementById("sound-toggle").textContent = soundOn ? "🔊" : "🔇";
+}
+
+// ============================================================
+//  GAME FLOW
+// ============================================================
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function startGame() {
+  initAudio();
+  sfxClick();
+  points = 0;
+  level = 1;
+  streak = 0;
+  questionsInLevel = 0;
+  totalCorrect = 0;
+  totalQuestions = 0;
+  recentQuestions.clear();
+  updateHUD();
+  document.getElementById("hud").style.display = "flex";
+  document.getElementById("progress-wrap").style.display = "block";
+  showScreen("screen-game");
+  nextQuestion();
+}
+
+function resetGame() {
+  sfxClick();
+  document.getElementById("hud").style.display = "none";
+  document.getElementById("progress-wrap").style.display = "none";
+  showScreen("screen-welcome");
+}
+
+function updateHUD() {
+  document.getElementById("hud-points").textContent = points;
+  document.getElementById("hud-level").textContent = level;
+  // Progress bar: progress within current level
+  const levelPoints = points - (level - 1) * POINTS_TO_LEVEL_UP;
+  const pct = Math.min(100, (levelPoints / POINTS_TO_LEVEL_UP) * 100);
+  document.getElementById("progress-bar").style.width = pct + "%";
+}
+
+function updateStreak() {
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById("ss" + i);
+    if (i <= streak) {
+      el.classList.add("lit");
+    } else {
+      el.classList.remove("lit");
+    }
+  }
+}
+
+// ============================================================
+//  QUESTION GENERATION
+// ============================================================
+
+function getRandomItems(arr, n, exclude = []) {
+  const filtered = arr.filter(item => !exclude.includes(item));
+  const shuffled = [...filtered].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
+
+function pickUnique(arr) {
+  // Pick a random item from arr that hasn't been seen recently.
+  // Once we've used half the pool, clear the history so items can repeat.
+  const available = arr.filter((_, i) => !recentQuestions.has(arr === PICTURE_WORDS ? 'pw'+i : arr === SIMPLE_SENTENCES ? 'ss'+i : arr === HARDER_SENTENCES ? 'hs'+i : arr === RHYMING_QUESTIONS ? 'rq'+i : arr === VOCAB_QUESTIONS ? 'vq'+i : arr === ANTONYM_QUESTIONS ? 'aq'+i : arr === PASSAGE_QUESTIONS ? 'pq'+i : 'hp'+i));
+  const pool = available.length > 0 ? available : arr;
+  if (available.length === 0) {
+    // Clear only keys for this array
+    const prefix = arr === PICTURE_WORDS ? 'pw' : arr === SIMPLE_SENTENCES ? 'ss' : arr === HARDER_SENTENCES ? 'hs' : arr === RHYMING_QUESTIONS ? 'rq' : arr === VOCAB_QUESTIONS ? 'vq' : arr === ANTONYM_QUESTIONS ? 'aq' : arr === PASSAGE_QUESTIONS ? 'pq' : 'hp';
+    for (const key of [...recentQuestions]) { if (key.startsWith(prefix)) recentQuestions.delete(key); }
+  }
+  const idx = Math.floor(Math.random() * pool.length);
+  const origIdx = arr.indexOf(pool[idx]);
+  const prefix = arr === PICTURE_WORDS ? 'pw' : arr === SIMPLE_SENTENCES ? 'ss' : arr === HARDER_SENTENCES ? 'hs' : arr === RHYMING_QUESTIONS ? 'rq' : arr === VOCAB_QUESTIONS ? 'vq' : arr === ANTONYM_QUESTIONS ? 'aq' : arr === PASSAGE_QUESTIONS ? 'pq' : 'hp';
+  recentQuestions.add(prefix + origIdx);
+  return pool[idx];
+}
+
+function generateQuestion() {
+  // Determine question type based on level
+  if (level <= 2) return genTier1Question();
+  if (level <= 4) return genTier2Question();
+  if (level <= 6) return genTier3Question();
+  if (level <= 8) return genTier4Question();
+  return genTier5Question();
+}
+
+// TIER 1 (Levels 1-2): Picture word matching + simple fill-in-the-blank
+function genTier1Question() {
+  if (Math.random() < 0.5) {
+    // Picture word match
+    const item = pickUnique(PICTURE_WORDS);
+    let wrongItems = getRandomItems(PICTURE_WORDS, 3, [item]).map(w => w.word);
+    let options = [item.word, ...wrongItems];
+    options.sort(() => Math.random() - 0.5);
+    return {
+      type: "picture",
+      prompt: "What is this?",
+      display: item.emoji,
+      displayIsEmoji: true,
+      hint: "Read each word carefully!",
+      answer: item.word,
+      options: options,
+    };
+  } else {
+    // Simple fill-in-the-blank
+    const q = pickUnique(SIMPLE_SENTENCES);
+    return {
+      type: "sentence",
+      prompt: "Fill in the blank",
+      display: q.prompt,
+      hint: "",
+      answer: q.answer,
+      options: [...q.options].sort(() => Math.random() - 0.5),
+      isSentence: true,
+    };
+  }
+}
+
+// TIER 2 (Levels 3-4): Harder sentences + rhyming words
+function genTier2Question() {
+  if (Math.random() < 0.5) {
+    const q = pickUnique(HARDER_SENTENCES);
+    return {
+      type: "sentence",
+      prompt: "Fill in the blank",
+      display: q.prompt,
+      hint: "Think about what makes sense!",
+      answer: q.answer,
+      options: [...q.options].sort(() => Math.random() - 0.5),
+      isSentence: true,
+    };
+  } else {
+    const q = pickUnique(RHYMING_QUESTIONS);
+    return {
+      type: "sentence",
+      prompt: "Rhyming words",
+      display: q.prompt,
+      hint: "Which word sounds like it at the end?",
+      answer: q.answer,
+      options: [...q.options].sort(() => Math.random() - 0.5),
+      isSentence: true,
+    };
+  }
+}
+
+// TIER 3 (Levels 5-6): Vocabulary meanings + antonyms
+function genTier3Question() {
+  if (Math.random() < 0.5) {
+    const q = pickUnique(VOCAB_QUESTIONS);
+    return {
+      type: "sentence",
+      prompt: "Word meanings",
+      display: q.prompt,
+      hint: "Think about what the word means!",
+      answer: q.answer,
+      options: [...q.options].sort(() => Math.random() - 0.5),
+      isSentence: true,
+    };
+  } else {
+    const q = pickUnique(ANTONYM_QUESTIONS);
+    return {
+      type: "sentence",
+      prompt: "Opposites",
+      display: q.prompt,
+      hint: "What means the opposite?",
+      answer: q.answer,
+      options: [...q.options].sort(() => Math.random() - 0.5),
+      isSentence: true,
+    };
+  }
+}
+
+// TIER 4 (Levels 7-8): Reading passages with comprehension questions
+function genTier4Question() {
+  const q = pickUnique(PASSAGE_QUESTIONS);
+  return {
+    type: "passage",
+    prompt: "Read the story, then answer",
+    display: q.passage,
+    question: q.question,
+    hint: "",
+    answer: q.answer,
+    options: [...q.options].sort(() => Math.random() - 0.5),
+    isPassage: true,
+  };
+}
+
+// TIER 5 (Levels 9-10): Harder comprehension with inference
+function genTier5Question() {
+  const q = pickUnique(HARD_PASSAGE_QUESTIONS);
+  return {
+    type: "passage",
+    prompt: "Read carefully, then answer",
+    display: q.passage,
+    question: q.question,
+    hint: "Think about WHY things happen!",
+    answer: q.answer,
+    options: [...q.options].sort(() => Math.random() - 0.5),
+    isPassage: true,
+  };
+}
+
+// ============================================================
+//  RENDER QUESTION
+// ============================================================
+
+function nextQuestion() {
+  isAnswering = false;
+  const q = generateQuestion();
+  const promptEl = document.getElementById("q-prompt");
+  const displayEl = document.getElementById("q-display");
+  const hintEl = document.getElementById("q-hint");
+  const feedbackEl = document.getElementById("feedback");
+  const grid = document.getElementById("answers-grid");
+
+  promptEl.textContent = q.prompt;
+  hintEl.textContent = q.hint || "";
+  feedbackEl.innerHTML = "&nbsp;";
+  feedbackEl.className = "feedback";
+
+  // Display
+  displayEl.className = "question-display";
+  if (q.displayIsEmoji) {
+    displayEl.innerHTML = `<span class="picture-emoji">${q.display}</span>`;
+  } else if (q.isPassage) {
+    displayEl.classList.add("passage-mode");
+    displayEl.innerHTML =
+      `<div class="passage-text">${q.display}</div>` +
+      `<div class="passage-question">${q.question}</div>`;
+  } else if (q.isSentence) {
+    displayEl.classList.add("sentence-mode");
+    displayEl.textContent = q.display;
+  } else {
+    displayEl.textContent = q.display;
+  }
+
+  // Answer buttons - passages and sentences use single column
+  const useSingleCol = q.isSentence || q.isPassage;
+  grid.innerHTML = "";
+  grid.className = "answers-grid" + (useSingleCol ? " single-col" : "");
+
+  q.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "answer-btn" + (useSingleCol ? " sentence-opt" : "");
+    btn.textContent = opt;
+    btn.addEventListener("click", () => handleAnswer(btn, opt, q.answer));
+    grid.appendChild(btn);
+  });
+}
+
+function handleAnswer(btn, selected, correct) {
+  if (isAnswering) return;
+  isAnswering = true;
+
+  const feedbackEl = document.getElementById("feedback");
+  const allBtns = document.querySelectorAll(".answer-btn");
+
+  if (selected === correct) {
+    // CORRECT
+    btn.classList.add("correct");
+    sfxCorrect();
+    streak = Math.min(streak + 1, 5);
+    const bonus = streak >= 5 ? STREAK_BONUS : 0;
+    const earned = POINTS_PER_CORRECT + bonus;
+    points += earned;
+    totalCorrect++;
+    totalQuestions++;
+    questionsInLevel++;
+
+    feedbackEl.textContent = CORRECT_MESSAGES[Math.floor(Math.random() * CORRECT_MESSAGES.length)];
+    feedbackEl.className = "feedback correct-fb";
+    if (bonus > 0) {
+      feedbackEl.textContent += ` (+${bonus} bonus!)`;
+    }
+
+    updateStreak();
+    updateHUD();
+
+    // Check level up
+    if (points >= level * POINTS_TO_LEVEL_UP && level < MAX_LEVEL) {
+      setTimeout(() => levelUp(), 800);
+    } else if (level >= MAX_LEVEL && points >= MAX_LEVEL * POINTS_TO_LEVEL_UP) {
+      setTimeout(() => completeGame(), 800);
+    } else {
+      setTimeout(() => nextQuestion(), 1000);
+    }
+  } else {
+    // WRONG
+    btn.classList.add("wrong");
+    sfxWrong();
+    streak = 0;
+    totalQuestions++;
+
+    feedbackEl.textContent = WRONG_MESSAGES[Math.floor(Math.random() * WRONG_MESSAGES.length)];
+    feedbackEl.className = "feedback wrong-fb";
+
+    updateStreak();
+
+    // Highlight correct answer
+    allBtns.forEach(b => {
+      if (b.textContent === correct) {
+        b.style.border = "3px solid " + getComputedStyle(document.documentElement).getPropertyValue('--green');
+        b.style.background = "#D1FAE5";
+        b.style.color = "#065F46";
+      }
+    });
+
+    // Allow retry after delay (new question)
+    setTimeout(() => {
+      isAnswering = false;
+      nextQuestion();
+    }, 1500);
+  }
+}
+
+// ============================================================
+//  LEVEL UP
+// ============================================================
+
+function levelUp() {
+  level++;
+  questionsInLevel = 0;
+  sfxLevelUp();
+  spawnConfetti();
+
+  document.getElementById("lu-emoji").textContent = ["🎉", "🌟", "🏆", "🦄", "🎊", "💖", "🌈", "✨", "🎈"][level % 9];
+  document.getElementById("lu-title").textContent = `Level ${level}!`;
+  document.getElementById("lu-msg").textContent = LEVELUP_MESSAGES[Math.min(level - 2, LEVELUP_MESSAGES.length - 1)];
+
+  // Video reward
+  const videoUrl = VIDEO_POOL[Math.floor(Math.random() * VIDEO_POOL.length)];
+  const container = document.getElementById("lu-video-container");
+  const placeholder = document.getElementById("lu-video-placeholder");
+
+  if (videoUrl) {
+    container.innerHTML = `<iframe src="${videoUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  } else {
+    container.innerHTML = "";
+    container.appendChild(placeholder.cloneNode(true));
+  }
+
+  document.getElementById("overlay-levelup").classList.add("active");
+  updateHUD();
+}
+
+function closeLevelUp() {
+  sfxClick();
+  // Stop any playing video
+  const container = document.getElementById("lu-video-container");
+  const iframes = container.querySelectorAll("iframe");
+  iframes.forEach(f => f.src = "");
+
+  document.getElementById("overlay-levelup").classList.remove("active");
+  nextQuestion();
+}
+
+function completeGame() {
+  sfxLevelUp();
+  spawnConfetti();
+  const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+  document.getElementById("completion-stats").innerHTML =
+    `⭐ Points: <strong>${points}</strong><br>` +
+    `✅ Correct: <strong>${totalCorrect} / ${totalQuestions}</strong><br>` +
+    `🎯 Accuracy: <strong>${accuracy}%</strong><br>` +
+    `🏆 You reached <strong>Level ${MAX_LEVEL}</strong>!`;
+  document.getElementById("hud").style.display = "none";
+  document.getElementById("progress-wrap").style.display = "none";
+  showScreen("screen-complete");
+}
+
+// ============================================================
+//  CONFETTI
+// ============================================================
+
+function spawnConfetti() {
+  const colors = ["#FF6B9D", "#C084FC", "#60A5FA", "#34D399", "#FBBF24", "#FB923C"];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement("div");
+    el.className = "confetti-piece";
+    el.style.left = Math.random() * 100 + "vw";
+    el.style.top = "-20px";
+    el.style.width = (6 + Math.random() * 8) + "px";
+    el.style.height = (6 + Math.random() * 8) + "px";
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+    el.style.opacity = 0.8 + Math.random() * 0.2;
+    document.body.appendChild(el);
+
+    const xDrift = (Math.random() - 0.5) * 200;
+    const duration = 1500 + Math.random() * 2000;
+    const delay = Math.random() * 500;
+
+    el.animate([
+      { transform: `translateY(0) translateX(0) rotate(0deg)`, opacity: 1 },
+      { transform: `translateY(${window.innerHeight + 40}px) translateX(${xDrift}px) rotate(${360 + Math.random() * 360}deg)`, opacity: 0 }
+    ], { duration, delay, easing: "ease-in", fill: "forwards" });
+
+    setTimeout(() => el.remove(), duration + delay + 100);
+  }
+}
+
+// ============================================================
+//  SPEECH SYNTHESIS (optional read-aloud for letters/words)
+// ============================================================
+// We can use the browser's speech synthesis to read letters/words aloud.
+// This is optional and enhances the experience.
+// Uncomment below if desired:
+/*
+function speakText(text) {
+  if (!soundOn) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.85;
+  utter.pitch = 1.1;
+  speechSynthesis.speak(utter);
+}
+*/
+</script>
+</body>
+</html>
