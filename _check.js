@@ -1,492 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Lillian's Reading Adventure ⭐</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  :root {
-    --pink: #FF6B9D;
-    --purple: #C084FC;
-    --blue: #60A5FA;
-    --green: #34D399;
-    --yellow: #FBBF24;
-    --orange: #FB923C;
-    --red: #F87171;
-    --bg: #FFF7ED;
-    --card: #FFFFFF;
-  }
-
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--bg) url('20240108_160702.jpg') center/cover no-repeat fixed;
-    height: 100vh; height: 100dvh;
-    overflow: hidden;
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  /* Floating background shapes */
-  .bg-shapes {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 0; overflow: hidden;
-  }
-  .bg-shape {
-    position: absolute; border-radius: 50%; opacity: 0.12;
-    animation: floatShape 8s ease-in-out infinite;
-  }
-  .bg-shape:nth-child(1) { width:200px;height:200px;background:var(--pink);top:10%;left:-5%;animation-delay:0s; }
-  .bg-shape:nth-child(2) { width:150px;height:150px;background:var(--purple);top:60%;right:-3%;animation-delay:2s; }
-  .bg-shape:nth-child(3) { width:180px;height:180px;background:var(--blue);bottom:5%;left:30%;animation-delay:4s; }
-  .bg-shape:nth-child(4) { width:120px;height:120px;background:var(--yellow);top:25%;right:20%;animation-delay:1s; }
-  .bg-shape:nth-child(5) { width:100px;height:100px;background:var(--green);top:50%;left:15%;animation-delay:3s; }
-
-  @keyframes floatShape {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-  }
-
-  /* Header / HUD */
-  .hud {
-    position: relative; z-index: 10;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    color: white;
-    box-shadow: 0 4px 20px rgba(192, 132, 252, 0.3);
-  }
-  .hud-name {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
-  }
-  .hud-stats {
-    display: flex; gap: 16px; align-items: center;
-  }
-  .hud-stat {
-    display: flex; align-items: center; gap: 5px;
-    font-weight: 700; font-size: 0.85rem;
-    background: rgba(255,255,255,0.2);
-    padding: 3px 10px; border-radius: 20px;
-  }
-  .hud-stat .emoji { font-size: 1.2rem; }
-
-  /* Progress bar */
-  .progress-wrap {
-    position: relative; z-index: 10;
-    height: 5px; background: rgba(192, 132, 252, 0.15);
-  }
-  .progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--yellow), var(--orange));
-    transition: width 0.5s ease;
-    border-radius: 0 4px 4px 0;
-  }
-
-  /* Main game area */
-  .game-container {
-    position: relative; z-index: 10;
-    max-width: 600px; margin: 0 auto;
-    padding: 8px 14px;
-    display: flex; flex-direction: column; align-items: center;
-    height: calc(100vh - 50px); height: calc(100dvh - 50px);
-    overflow: hidden;
-    background: rgba(255, 247, 237, 0.85);
-    border-radius: 0 0 18px 18px;
-  }
-
-  /* Screens */
-  .screen { display: none; width: 100%; text-align: center; }
-  .screen.active { display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center; }
-  #screen-game.active { justify-content: flex-start; }
-
-  /* Welcome screen */
-  .welcome-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: 2.2rem;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 8px;
-  }
-  .welcome-sub {
-    font-size: 1.1rem; color: #888; margin-bottom: 30px; font-weight: 600;
-  }
-  .welcome-mascot {
-    font-size: 4.5rem; margin-bottom: 12px;
-    animation: bounce 2s ease-in-out infinite;
-  }
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-  }
-
-  .btn-play {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.8rem;
-    padding: 18px 60px;
-    border: none; border-radius: 50px; cursor: pointer;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    color: white;
-    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
-    transition: transform 0.15s, box-shadow 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .btn-play:active {
-    transform: scale(0.95);
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
-  }
-
-  /* Question area */
-  .question-card {
-    background: var(--card);
-    border-radius: 18px;
-    padding: 12px 14px;
-    width: 100%;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-    margin-bottom: 6px;
-    flex-shrink: 1;
-    overflow: hidden;
-  }
-  .question-prompt {
-    font-size: 0.8rem; color: #aaa; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 6px;
-  }
-  .question-display {
-    font-size: 2.2rem; font-weight: 800;
-    color: #334155;
-    line-height: 1.2;
-    min-height: 50px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .question-display .picture-emoji {
-    font-size: 3.8rem;
-  }
-  .question-display.sentence-mode {
-    font-size: 1.3rem;
-  }
-  .question-display.passage-mode {
-    font-size: 1rem;
-    flex-direction: column;
-    text-align: left;
-    gap: 6px;
-    min-height: auto;
-  }
-  .passage-text {
-    font-size: 0.88rem;
-    line-height: 1.5;
-    color: #475569;
-    font-weight: 600;
-    background: #F8FAFC;
-    border-radius: 10px;
-    padding: 10px 12px;
-    border-left: 4px solid var(--purple);
-    max-height: 28vh;
-    overflow-y: auto;
-  }
-  .passage-question {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: var(--pink);
-    text-align: center;
-  }
-  .question-hint {
-    margin-top: 4px; font-size: 0.8rem; color: #94a3b8; font-weight: 600;
-  }
-
-  /* Answer buttons */
-  .answers-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    width: 100%;
-    margin-bottom: 4px;
-    flex-shrink: 0;
-  }
-  .answers-grid.single-col {
-    grid-template-columns: 1fr;
-  }
-
-  .answer-btn {
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.25rem; font-weight: 800;
-    padding: 12px 10px;
-    border: 3px solid #E2E8F0;
-    border-radius: 16px;
-    background: white;
-    color: #334155;
-    cursor: pointer;
-    transition: all 0.15s;
-    -webkit-tap-highlight-color: transparent;
-    min-height: 48px;
-    display: flex; align-items: center; justify-content: center;
-    word-break: break-word;
-  }
-  .answer-btn:active {
-    transform: scale(0.96);
-  }
-  .answer-btn.correct {
-    background: var(--green); color: white; border-color: var(--green);
-    animation: popCorrect 0.4s ease;
-  }
-  .answer-btn.wrong {
-    background: var(--red); color: white; border-color: var(--red);
-    animation: shake 0.4s ease;
-  }
-  @keyframes popCorrect {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-    100% { transform: scale(1); }
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-8px); }
-    75% { transform: translateX(8px); }
-  }
-
-  .answer-btn.sentence-opt {
-    font-size: 0.95rem;
-    padding: 10px 10px;
-    text-align: left;
-    min-height: 40px;
-  }
-
-  /* Feedback area */
-  .feedback {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.1rem;
-    min-height: 28px;
-    margin-bottom: 2px;
-    transition: opacity 0.3s;
-    flex-shrink: 0;
-  }
-  .feedback.correct-fb { color: var(--green); }
-  .feedback.wrong-fb { color: var(--red); }
-
-  /* Streak indicator */
-  .streak-bar {
-    display: flex; gap: 4px; align-items: center;
-    margin-bottom: 6px;
-    flex-shrink: 0;
-  }
-  .streak-star {
-    font-size: 1rem;
-    transition: all 0.3s;
-    opacity: 0.2;
-  }
-  .streak-star.lit {
-    opacity: 1;
-    animation: starPop 0.4s ease;
-  }
-  @keyframes starPop {
-    0% { transform: scale(0.5) rotate(-20deg); }
-    60% { transform: scale(1.3) rotate(5deg); }
-    100% { transform: scale(1) rotate(0); }
-  }
-
-  /* Level up overlay */
-  .overlay {
-    display: none;
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    z-index: 100;
-    justify-content: center; align-items: center;
-    padding: 20px;
-  }
-  .overlay.active { display: flex; }
-
-  .levelup-card {
-    background: white; border-radius: 30px;
-    padding: 20px 20px; text-align: center;
-    max-width: 95vw; width: 100%;
-    animation: slideUp 0.5s ease;
-    max-height: 95vh;
-    overflow-y: auto;
-  }
-  @keyframes slideUp {
-    from { transform: translateY(60px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  .levelup-emoji { font-size: 3rem; margin-bottom: 6px; }
-  .levelup-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: 2rem;
-    background: linear-gradient(135deg, var(--yellow), var(--orange));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 4px;
-  }
-  .levelup-msg {
-    font-size: 1rem; color: #64748B; font-weight: 600;
-    margin-bottom: 10px;
-  }
-  .video-container {
-    width: 100%; aspect-ratio: 16/9;
-    border-radius: 16px; overflow: hidden;
-    margin-bottom: 12px;
-    background: #1e1e2e;
-    max-height: 60vh;
-  }
-  .video-container iframe {
-    width: 100%; height: 100%; border: none;
-  }
-  .video-placeholder {
-    width: 100%; height: 100%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    color: #94a3b8; font-weight: 700;
-  }
-  .video-placeholder .emoji { font-size: 3rem; margin-bottom: 8px; }
-
-  .btn-continue {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.3rem;
-    padding: 14px 50px;
-    border: none; border-radius: 50px; cursor: pointer;
-    background: linear-gradient(135deg, var(--green), #059669);
-    color: white;
-    box-shadow: 0 6px 20px rgba(52, 211, 153, 0.4);
-    transition: transform 0.15s;
-  }
-  .btn-continue:active { transform: scale(0.95); }
-
-  /* Confetti */
-  .confetti-piece {
-    position: fixed; z-index: 200;
-    width: 10px; height: 10px;
-    pointer-events: none;
-  }
-
-  /* Sound toggle */
-  .sound-toggle {
-    position: fixed; bottom: 16px; right: 16px;
-    z-index: 50;
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    border: none;
-    background: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    font-size: 1.4rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  /* Completion screen */
-  .completion-emoji { font-size: 6rem; margin-bottom: 16px; }
-  .completion-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: 2rem;
-    color: var(--purple);
-    margin-bottom: 10px;
-  }
-  .completion-stats {
-    font-size: 1.1rem; color: #64748B; font-weight: 600;
-    margin-bottom: 30px; line-height: 2;
-  }
-
-  /* Responsive */
-  @media (max-width: 400px) {
-    .welcome-title { font-size: 1.5rem; }
-    .question-display { font-size: 1.8rem; }
-    .answer-btn { font-size: 1rem; padding: 8px 8px; min-height: 40px; }
-    .answer-btn.sentence-opt { font-size: 0.85rem; padding: 7px 8px; min-height: 34px; }
-    .hud-name { font-size: 0.9rem; }
-    .passage-text { font-size: 0.8rem; padding: 8px 10px; max-height: 24vh; }
-    .passage-question { font-size: 0.95rem; }
-    .question-card { padding: 10px 12px; }
-  }
-</style>
-</head>
-<body>
-
-<div class="bg-shapes">
-  <div class="bg-shape"></div>
-  <div class="bg-shape"></div>
-  <div class="bg-shape"></div>
-  <div class="bg-shape"></div>
-  <div class="bg-shape"></div>
-</div>
-
-<!-- HUD -->
-<div class="hud" id="hud" style="display:none;">
-  <div class="hud-name">Lillian's Adventure</div>
-  <div class="hud-stats">
-    <div class="hud-stat"><span class="emoji">⭐</span><span id="hud-points">0</span></div>
-    <div class="hud-stat"><span class="emoji">🏆</span>Lv <span id="hud-level">1</span></div>
-  </div>
-</div>
-<div class="progress-wrap" id="progress-wrap" style="display:none;">
-  <div class="progress-bar" id="progress-bar" style="width:0%"></div>
-</div>
-
-<div class="game-container">
-
-  <!-- WELCOME SCREEN -->
-  <div class="screen active" id="screen-welcome">
-    <div class="welcome-mascot">📚</div>
-    <div class="welcome-title">Lillian's Reading Adventure!</div>
-    <div class="welcome-sub">Tap the right answers to earn stars!</div>
-    <button class="btn-play" id="btn-start" onclick="startGame()">Let's Read!</button>
-  </div>
-
-  <!-- GAME SCREEN -->
-  <div class="screen" id="screen-game">
-    <div class="streak-bar" id="streak-bar">
-      <div class="streak-star" id="ss1">⭐</div>
-      <div class="streak-star" id="ss2">⭐</div>
-      <div class="streak-star" id="ss3">⭐</div>
-      <div class="streak-star" id="ss4">⭐</div>
-      <div class="streak-star" id="ss5">⭐</div>
-      <div class="streak-star" id="ss6">⭐</div>
-      <div class="streak-star" id="ss7">⭐</div>
-      <div class="streak-star" id="ss8">⭐</div>
-      <div class="streak-star" id="ss9">⭐</div>
-      <div class="streak-star" id="ss10">⭐</div>
-    </div>
-    <div class="question-card">
-      <div class="question-prompt" id="q-prompt">Tap the letter</div>
-      <div class="question-display" id="q-display"></div>
-      <div class="question-hint" id="q-hint"></div>
-    </div>
-    <div class="feedback" id="feedback">&nbsp;</div>
-    <div class="answers-grid" id="answers-grid"></div>
-  </div>
-
-  <!-- COMPLETION SCREEN -->
-  <div class="screen" id="screen-complete">
-    <div class="completion-emoji">🎉🏆🌟</div>
-    <div class="completion-title">Amazing Job, Lillian!</div>
-    <div class="completion-stats" id="completion-stats"></div>
-    <button class="btn-play" onclick="resetGame()">Play Again!</button>
-  </div>
-</div>
-
-<!-- LEVEL UP OVERLAY -->
-<div class="overlay" id="overlay-levelup">
-  <div class="levelup-card">
-    <div class="levelup-emoji" id="lu-emoji">🎉</div>
-    <div class="levelup-title" id="lu-title">Level Up!</div>
-    <div class="levelup-msg" id="lu-msg">You're doing amazing, Lillian!</div>
-    <div class="video-container" id="lu-video-container">
-      <div class="video-placeholder" id="lu-video-placeholder">
-        <div class="emoji">🎬</div>
-        <div>Video reward coming soon!</div>
-      </div>
-    </div>
-    <button class="btn-continue" onclick="closeLevelUp()">Keep Reading! ➜</button>
-  </div>
-</div>
-
-<!-- Audio context for simple sounds -->
-<button class="sound-toggle" id="sound-toggle" onclick="toggleSound()">🔊</button>
-
-<script>
 // ============================================================
 //  LILLIAN'S READING ADVENTURE - Game Engine
 // ============================================================
@@ -520,10 +32,10 @@ const VIDEO_POOL = [
   "https://www.youtube.com/embed/bvWRMAU6V-c?autoplay=1",
   "https://www.youtube.com/embed/Yp5nPGWWMh4?autoplay=1",
   "https://www.youtube.com/embed/w0HxMhXSgXo?autoplay=1",
-  "https://www.youtube.com/embed/ET9hpyVWImI?autoplay=1",
-  "https://www.youtube.com/embed/V2VjOkgF0tA?autoplay=1",
-  "https://www.youtube.com/embed/6oEJG-8kATc?autoplay=1",
-  "https://www.youtube.com/embed/OwpgvSo_G0g?autoplay=1",
+  "https://www.youtube.com/embed/RX8NaNcVB5A?autoplay=1",
+  "https://www.youtube.com/embed/yUDp8l7rysU?autoplay=1",
+  "https://www.youtube.com/embed/UlShUHCkzXU?autoplay=1",
+  "https://www.youtube.com/embed/yebNIHKAC4A?autoplay=1",
 ];
 
 // --- Encouragement messages ---
@@ -1386,13 +898,56 @@ function levelUp() {
   const container = document.getElementById("lu-video-container");
   if (level % VIDEO_EVERY_N_LEVELS === 0) {
     const videoUrl = VIDEO_POOL[Math.floor(Math.random() * VIDEO_POOL.length)];
-    container.innerHTML = `<iframe src="${videoUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    const videoId = videoUrl.match(/embed\/([^?]+)/)?.[1] || "";
+    const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+    // Try embedding first; fall back to clickable thumbnail if embed fails (e.g. file:// protocol)
+    container.innerHTML = `<iframe id="lu-video-iframe" src="${videoUrl}" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+
+    const iframe = document.getElementById("lu-video-iframe");
+    // Detect load failure — if opened via file:// or embed is blocked, show fallback
+    const fallbackTimer = setTimeout(() => {
+      showVideoFallback(container, thumbUrl, watchUrl);
+    }, 4000);
+
+    iframe.addEventListener("load", () => {
+      try {
+        // If we can access contentDocument without error, the embed likely loaded
+        // On file:// protocol or blocked embeds, this will throw or the frame will be blank
+        if (window.location.protocol === "file:") {
+          clearTimeout(fallbackTimer);
+          showVideoFallback(container, thumbUrl, watchUrl);
+        } else {
+          clearTimeout(fallbackTimer);
+        }
+      } catch (e) {
+        clearTimeout(fallbackTimer);
+        showVideoFallback(container, thumbUrl, watchUrl);
+      }
+    });
+
+    iframe.addEventListener("error", () => {
+      clearTimeout(fallbackTimer);
+      showVideoFallback(container, thumbUrl, watchUrl);
+    });
   } else {
     container.innerHTML = `<div style="text-align:center;padding:1.5rem;font-size:1.3rem;color:#7C3AED;">Keep going! Video reward at Level ${Math.ceil(level / VIDEO_EVERY_N_LEVELS) * VIDEO_EVERY_N_LEVELS}! 🎬</div>`;
   }
 
   document.getElementById("overlay-levelup").classList.add("active");
   updateHUD();
+}
+
+function showVideoFallback(container, thumbUrl, watchUrl) {
+  container.innerHTML = `
+    <a href="${watchUrl}" target="_blank" rel="noopener" style="display:block;position:relative;width:100%;height:100%;cursor:pointer;text-decoration:none;">
+      <img src="${thumbUrl}" alt="Video thumbnail" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);border-radius:50%;width:64px;height:64px;display:flex;align-items:center;justify-content:center;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <div style="position:absolute;bottom:8px;left:0;right:0;text-align:center;color:white;font-weight:700;font-size:0.95rem;text-shadow:0 1px 4px rgba(0,0,0,0.8);">Tap to watch your video reward! 🎬</div>
+    </a>`;
 }
 
 function closeLevelUp() {
@@ -1466,6 +1021,3 @@ function speakText(text) {
   speechSynthesis.speak(utter);
 }
 */
-</script>
-</body>
-</html>
