@@ -500,6 +500,7 @@ let totalCorrect = 0;
 let totalQuestions = 0;
 let soundOn = true;
 let isAnswering = false;
+let lastVideoIndex = -1;
 const recentQuestions = new Set();
 
 const POINTS_PER_CORRECT = 10;
@@ -1382,10 +1383,14 @@ function levelUp() {
   document.getElementById("lu-title").textContent = `Level ${level}!`;
   document.getElementById("lu-msg").textContent = LEVELUP_MESSAGES[Math.min(level - 2, LEVELUP_MESSAGES.length - 1)];
 
-  // Video reward — every level-up
+  // Video reward — every level-up (no repeats back-to-back)
   const container = document.getElementById("lu-video-container");
-  const videoUrl = VIDEO_POOL[Math.floor(Math.random() * VIDEO_POOL.length)];
-  container.innerHTML = `<iframe src="${videoUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  let idx = Math.floor(Math.random() * VIDEO_POOL.length);
+  if (VIDEO_POOL.length > 1 && idx === lastVideoIndex) {
+    idx = (idx + 1) % VIDEO_POOL.length;
+  }
+  lastVideoIndex = idx;
+  container.innerHTML = `<iframe src="${VIDEO_POOL[idx]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 
   document.getElementById("overlay-levelup").classList.add("active");
   updateHUD();
