@@ -276,7 +276,7 @@
     flex-shrink: 0;
   }
   .streak-star {
-    font-size: 1.3rem;
+    font-size: 1rem;
     transition: all 0.3s;
     opacity: 0.2;
   }
@@ -443,6 +443,11 @@
       <div class="streak-star" id="ss3">⭐</div>
       <div class="streak-star" id="ss4">⭐</div>
       <div class="streak-star" id="ss5">⭐</div>
+      <div class="streak-star" id="ss6">⭐</div>
+      <div class="streak-star" id="ss7">⭐</div>
+      <div class="streak-star" id="ss8">⭐</div>
+      <div class="streak-star" id="ss9">⭐</div>
+      <div class="streak-star" id="ss10">⭐</div>
     </div>
     <div class="question-card">
       <div class="question-prompt" id="q-prompt">Tap the letter</div>
@@ -515,6 +520,10 @@ const VIDEO_POOL = [
   "https://www.youtube.com/embed/bvWRMAU6V-c?autoplay=1",
   "https://www.youtube.com/embed/Yp5nPGWWMh4?autoplay=1",
   "https://www.youtube.com/embed/w0HxMhXSgXo?autoplay=1",
+  "https://www.youtube.com/embed/RX8NaNcVB5A?autoplay=1",
+  "https://www.youtube.com/embed/yUDp8l7rysU?autoplay=1",
+  "https://www.youtube.com/embed/UlShUHCkzXU?autoplay=1",
+  "https://www.youtube.com/embed/yebNIHKAC4A?autoplay=1",
 ];
 
 // --- Encouragement messages ---
@@ -703,6 +712,40 @@ const RHYMING_QUESTIONS = [
   { prompt: "Which word rhymes with FROG?", answer: "log", options: ["log", "pond", "hop", "wet"] },
 ];
 
+// TIER 2.5: Mini Reading Passages (mixed into Tiers 2 and 3 for early comprehension exposure)
+const MINI_PASSAGE_QUESTIONS = [
+  { passage: "The dog ran to the park. He played with a red ball.", question: "What did the dog play with?", answer: "a red ball", options: ["a red ball", "a stick", "a bone", "a toy"] },
+  { passage: "Mom made pancakes for breakfast. She put syrup and butter on top.", question: "What did Mom make?", answer: "pancakes", options: ["pancakes", "eggs", "toast", "cereal"] },
+  { passage: "It was snowing outside. The kids put on their coats and boots.", question: "What was the weather like?", answer: "snowy", options: ["snowy", "sunny", "rainy", "windy"] },
+  { passage: "Lily got a new kitten. She named it Mittens because it had white paws.", question: "Why did she name it Mittens?", answer: "it had white paws", options: ["it had white paws", "it was gray", "it was big", "it liked mittens"] },
+  { passage: "Dad took us to the zoo. We saw lions, monkeys, and a big elephant.", question: "Where did Dad take them?", answer: "the zoo", options: ["the zoo", "the park", "the store", "school"] },
+  { passage: "Sam drew a picture of a house. He used red for the roof and green for the door.", question: "What color was the roof?", answer: "red", options: ["red", "green", "blue", "yellow"] },
+  { passage: "The frog sat on a lily pad. He jumped into the water with a big splash.", question: "Where was the frog sitting?", answer: "on a lily pad", options: ["on a lily pad", "on a rock", "in a tree", "on the grass"] },
+  { passage: "Emma lost her teddy bear. She found it under her bed.", question: "Where was the teddy bear?", answer: "under the bed", options: ["under the bed", "in the closet", "on the shelf", "in the car"] },
+  { passage: "The bird built a nest in the tree. She laid three blue eggs inside.", question: "How many eggs were there?", answer: "three", options: ["three", "two", "four", "five"] },
+  { passage: "Jake ate an apple for a snack. It was green and very crunchy.", question: "What color was the apple?", answer: "green", options: ["green", "red", "yellow", "orange"] },
+  { passage: "We went to the beach on Saturday. We built a big sandcastle near the water.", question: "What day did they go to the beach?", answer: "Saturday", options: ["Saturday", "Sunday", "Monday", "Friday"] },
+  { passage: "The cat climbed up the tall tree. Dad had to get a ladder to bring her down.", question: "Who helped get the cat down?", answer: "Dad", options: ["Dad", "Mom", "the cat came down alone", "a friend"] },
+  { passage: "Ben's birthday party had a clown. The clown made animals out of balloons.", question: "What did the clown make?", answer: "balloon animals", options: ["balloon animals", "a cake", "a hat", "a painting"] },
+  { passage: "It rained all day long. We played board games inside the house.", question: "Why did they play inside?", answer: "it was raining", options: ["it was raining", "they were sick", "it was bedtime", "they were tired"] },
+  { passage: "Grandma baked cookies with chocolate chips. The whole house smelled wonderful.", question: "What kind of cookies did Grandma bake?", answer: "chocolate chip", options: ["chocolate chip", "sugar", "peanut butter", "oatmeal"] },
+  { passage: "The bus picks us up at 8 o'clock. We ride it to school every morning.", question: "What time does the bus come?", answer: "8 o'clock", options: ["8 o'clock", "7 o'clock", "9 o'clock", "noon"] },
+  { passage: "Mia planted a sunflower seed. After a few weeks, a tall yellow flower grew.", question: "What color was the flower?", answer: "yellow", options: ["yellow", "red", "blue", "pink"] },
+  { passage: "The baby was crying. Mom gave her a bottle of warm milk and she fell asleep.", question: "What made the baby stop crying?", answer: "a bottle of warm milk", options: ["a bottle of warm milk", "a toy", "a song", "a blanket"] },
+  { passage: "Tom has two pets. He has a hamster named Nibbles and a fish named Goldie.", question: "What is the hamster's name?", answer: "Nibbles", options: ["Nibbles", "Goldie", "Tom", "Buddy"] },
+  { passage: "We had pizza for dinner. I picked pepperoni and my sister picked cheese.", question: "What did the sister pick?", answer: "cheese", options: ["cheese", "pepperoni", "mushroom", "sausage"] },
+  { passage: "The firefighters drove their big red truck. They put out the fire with a long hose.", question: "What color was the truck?", answer: "red", options: ["red", "blue", "yellow", "white"] },
+  { passage: "Lucy went to the library. She checked out two books about dinosaurs.", question: "What were the books about?", answer: "dinosaurs", options: ["dinosaurs", "dogs", "space", "cooking"] },
+  { passage: "The ice cream truck came down our street. I got a chocolate cone and my friend got strawberry.", question: "What flavor did the friend get?", answer: "strawberry", options: ["strawberry", "chocolate", "vanilla", "mint"] },
+  { passage: "We saw a rainbow after the rain. It had red, orange, yellow, green, blue, and purple.", question: "When did the rainbow appear?", answer: "after the rain", options: ["after the rain", "before the rain", "at night", "in the morning"] },
+  { passage: "The farmer has chickens. They lay eggs every morning in the barn.", question: "Where do the chickens lay eggs?", answer: "in the barn", options: ["in the barn", "in the house", "in the field", "by the pond"] },
+  { passage: "Nina got new shoes for school. They were purple with white laces.", question: "What color were the shoes?", answer: "purple", options: ["purple", "red", "blue", "black"] },
+  { passage: "The class went on a trip to the aquarium. They saw sharks, jellyfish, and sea turtles.", question: "Where did the class go?", answer: "the aquarium", options: ["the aquarium", "the zoo", "the park", "the beach"] },
+  { passage: "Max ran in the race at school. He came in second place and got a silver ribbon.", question: "What place did Max come in?", answer: "second", options: ["second", "first", "third", "last"] },
+  { passage: "The snowman had a carrot nose and stick arms. He wore Dad's old hat on his head.", question: "What were the arms made of?", answer: "sticks", options: ["sticks", "rocks", "carrots", "rope"] },
+  { passage: "We made lemonade on a hot day. We squeezed lemons and added sugar and ice.", question: "Why did they make lemonade?", answer: "it was a hot day", options: ["it was a hot day", "it was cold", "Mom said to", "they were bored"] },
+];
+
 // TIER 3 (Levels 5-6): Vocabulary & Word Meanings + Antonyms
 const VOCAB_QUESTIONS = [
   { prompt: "What does HUGE mean?", answer: "very big", options: ["very big", "very small", "very fast", "very old"] },
@@ -825,6 +868,30 @@ const PASSAGE_QUESTIONS = [
   { passage: "Tomas was building a tower with blocks. He stacked twenty blocks before it wobbled and fell. His little sister laughed, but Tomas just smiled and started building again. This time he made the base wider.", question: "How many blocks did Tomas stack?", answer: "twenty", options: ["twenty", "ten", "twelve", "thirty"] },
   { passage: "Lily's class went on a nature walk through the woods behind the school. They saw deer tracks in the mud, a bird's nest in a low branch, and a creek with tiny fish swimming in it. Their teacher told them to sketch one thing they saw.", question: "Where did they find the bird's nest?", answer: "in a low branch", options: ["in a low branch", "on the ground", "by the creek", "on a rock"] },
   { passage: "Chef Ramirez visited the school to teach kids about healthy eating. He showed them how to make a fruit salad with strawberries, blueberries, and kiwi. He said eating colorful food helps your body stay strong.", question: "What did Chef Ramirez teach?", answer: "healthy eating", options: ["healthy eating", "how to bake bread", "how to cook pasta", "food safety"] },
+  { passage: "Hailey's mom packed her lunch in a blue lunchbox every day. On Monday she had a turkey sandwich. On Tuesday she had pasta. On Wednesday she had soup in a thermos. Hailey's favorite was the pasta.", question: "What did Hailey eat on Tuesday?", answer: "pasta", options: ["pasta", "soup", "a sandwich", "salad"] },
+  { passage: "The science fair was on Friday. Diego made a volcano out of clay. He poured vinegar and baking soda inside, and it fizzed and bubbled over the top! Everyone clapped and cheered.", question: "What made the volcano fizz?", answer: "vinegar and baking soda", options: ["vinegar and baking soda", "water and soap", "juice and soda", "oil and salt"] },
+  { passage: "The students measured how tall their bean plants grew each week. Ava's plant was the tallest at twelve inches. Ben's was nine inches and Cara's was only five inches. Cara said she forgot to water hers a few times.", question: "Whose plant was the tallest?", answer: "Ava's", options: ["Ava's", "Ben's", "Cara's", "the teacher's"] },
+  { passage: "Every Wednesday, the town library had story time for kids. Mrs. Chen read picture books in a funny voice that made everyone laugh. After the story, kids got to pick out a free bookmark.", question: "What happened after the story?", answer: "Kids got a free bookmark", options: ["Kids got a free bookmark", "They ate snacks", "They played outside", "They read on their own"] },
+  { passage: "Pablo and his sister collected seashells at the beach. Pablo found eight white shells and three pink ones. His sister found a big spiral shell that they could hear the ocean in when they held it to their ear.", question: "How many white shells did Pablo find?", answer: "eight", options: ["eight", "three", "eleven", "five"] },
+  { passage: "The fire alarm went off during math class. Everyone walked in a line to the parking lot. The teacher counted all the students to make sure no one was missing. It was just a drill — there was no real fire.", question: "Why did they go to the parking lot?", answer: "The fire alarm went off", options: ["The fire alarm went off", "Math class was over", "It was recess", "They were going on a trip"] },
+  { passage: "Olivia and her dad planted a garden with three rows. The first row had carrots, the second had lettuce, and the third had sunflowers. Olivia watered them every morning before school.", question: "What was in the second row?", answer: "lettuce", options: ["lettuce", "carrots", "sunflowers", "tomatoes"] },
+  { passage: "During recess, the kids played a game of tag. Jordan was 'it' first. He tagged Maya, and then Maya tagged Elijah. The bell rang before Elijah could tag anyone else.", question: "Who was 'it' when the bell rang?", answer: "Elijah", options: ["Elijah", "Jordan", "Maya", "nobody"] },
+  { passage: "Aunt Rosa sent birthday cards to each of her nieces and nephews. Inside each card she put five dollars. She had seven nieces and nephews, so she spent thirty-five dollars on birthday money that year.", question: "How much money was in each card?", answer: "five dollars", options: ["five dollars", "seven dollars", "thirty-five dollars", "ten dollars"] },
+  { passage: "The class pet fish was named Bubbles. He was orange with white stripes. Every morning, one student sprinkled fish food into the bowl. On weekends, the teacher fed him.", question: "What did Bubbles look like?", answer: "orange with white stripes", options: ["orange with white stripes", "blue with spots", "all gold", "red and black"] },
+  { passage: "Zoe's class was learning about the solar system. They made a model with foam balls. The biggest ball was Jupiter and the smallest was Mercury. They hung the model from the ceiling with string.", question: "Which planet was the biggest ball?", answer: "Jupiter", options: ["Jupiter", "Mercury", "Earth", "Saturn"] },
+  { passage: "Kaden earned stickers for good behavior at school. When he got twenty stickers, he could pick a prize from the treasure box. It took him three weeks to earn twenty stickers. He chose a small toy car.", question: "How many stickers did Kaden need for a prize?", answer: "twenty", options: ["twenty", "three", "ten", "fifteen"] },
+  { passage: "The family drove to Grandma's house for Thanksgiving. It took four hours. On the way, they played I-Spy and listened to music. Dad stopped at a gas station so everyone could stretch their legs.", question: "How long was the drive?", answer: "four hours", options: ["four hours", "two hours", "one hour", "six hours"] },
+  { passage: "In music class, the students learned to play the recorder. They practiced 'Hot Cross Buns' and 'Mary Had a Little Lamb.' By the end of the month, they gave a short concert for their parents.", question: "What instrument did they learn?", answer: "the recorder", options: ["the recorder", "the piano", "the guitar", "the drums"] },
+  { passage: "Mia's cat had four kittens. Two were gray, one was black, and one was orange. Mia's family kept the orange one and found homes for the others. They named the orange kitten Sunny.", question: "How many kittens were gray?", answer: "two", options: ["two", "one", "three", "four"] },
+  { passage: "The school held a bake sale to raise money for new playground equipment. Parents brought cupcakes, brownies, and cookies. Everything cost one dollar. They raised two hundred dollars in one afternoon.", question: "What was the money for?", answer: "new playground equipment", options: ["new playground equipment", "new books", "a field trip", "art supplies"] },
+  { passage: "Lena wrote in her journal every night before bed. She wrote about what happened at school, what she ate for dinner, and how she was feeling. Her favorite entry was about the day she found a four-leaf clover.", question: "When did Lena write in her journal?", answer: "every night before bed", options: ["every night before bed", "every morning", "at school", "on weekends"] },
+  { passage: "The town parade went down Main Street every Fourth of July. There were fire trucks, marching bands, and people throwing candy. Jayden caught twelve pieces of candy and shared half with his sister.", question: "How many pieces did Jayden share?", answer: "six", options: ["six", "twelve", "three", "four"] },
+  { passage: "Ms. Green's class voted on a name for their new classroom rabbit. The choices were Snowball, Cocoa, and Clover. Snowball got eight votes, Cocoa got five, and Clover got twelve. The rabbit was named Clover.", question: "Which name won?", answer: "Clover", options: ["Clover", "Snowball", "Cocoa", "Bunny"] },
+  { passage: "On rainy days, the students had indoor recess. They could play board games, draw, read books, or build with blocks. Harper always chose to draw. She filled three sketchbooks that year.", question: "What did Harper always do at indoor recess?", answer: "draw", options: ["draw", "read books", "play board games", "build with blocks"] },
+  { passage: "Felix and his grandpa went birdwatching in the park. They saw a robin, two blue jays, and a woodpecker. Grandpa wrote each bird in his notebook. He said he had seen over one hundred different kinds of birds in his life.", question: "How many blue jays did they see?", answer: "two", options: ["two", "one", "three", "one hundred"] },
+  { passage: "The class took a field trip to the fire station. They learned how firefighters slide down the pole and how they put on their gear in under one minute. Each student got to sit inside the fire truck and try on a helmet.", question: "How fast can firefighters put on their gear?", answer: "under one minute", options: ["under one minute", "five minutes", "ten seconds", "one hour"] },
+  { passage: "Gia's older brother taught her how to make a paper airplane. They tried five different designs. The one with wide wings flew the farthest — all the way across the living room! Gia made ten more of that design.", question: "Which airplane flew the farthest?", answer: "the one with wide wings", options: ["the one with wide wings", "the one with small wings", "the first one they made", "the last one they made"] },
+  { passage: "It was crazy hat day at school. Some kids wore silly hats with feathers. One boy wore a hat shaped like a pizza. The principal wore the funniest hat of all — it looked like a giant chicken! Everyone laughed when they saw her.", question: "What did the principal's hat look like?", answer: "a giant chicken", options: ["a giant chicken", "a pizza", "a clown hat", "a cowboy hat"] },
 ];
 
 // TIER 5 (Levels 9-10): Harder Comprehension with Inference & Reasoning
@@ -871,6 +938,31 @@ const HARD_PASSAGE_QUESTIONS = [
   { passage: "The class was learning about recycling. They found out that one aluminum can takes about 500 years to break down in a landfill, but if you recycle it, it can become a new can in just 60 days. The students started a recycling bin in every classroom.", question: "Why did the students start recycling bins?", answer: "They learned how long trash takes to break down", options: ["They learned how long trash takes to break down", "The teacher made them", "They wanted new cans", "Recycling bins look nice"] },
   { passage: "Bea was nervous about her piano recital. She had practiced her song fifty times, but her hands still felt shaky. When she sat down at the piano, she took a deep breath and pretended she was playing in her living room at home. Her fingers relaxed, and she played the song perfectly.", question: "What helped Bea play well?", answer: "She calmed herself by imagining she was at home", options: ["She calmed herself by imagining she was at home", "She didn't practice enough", "Someone helped her play", "She played a different song"] },
   { passage: "Two brothers were arguing about which movie to watch. Ethan wanted an action movie and Lucas wanted a comedy. Their dad said, 'Why don't you each pick one, and we'll watch both — one tonight and one tomorrow?' Both boys agreed and shook hands.", question: "How did Dad solve the problem?", answer: "He suggested a fair compromise", options: ["He suggested a fair compromise", "He picked a different movie", "He said no movies at all", "He let only one boy choose"] },
+  { passage: "Every day after school, Tanya walked past a house with a big garden. She noticed that the flowers were drooping and the grass was brown. One afternoon she saw an elderly woman trying to carry a heavy watering can. Tanya offered to help, and soon she was visiting every day to water the garden.", question: "Why were the flowers drooping?", answer: "The elderly woman couldn't water them by herself", options: ["The elderly woman couldn't water them by herself", "It was winter", "Someone cut them", "There was too much sun"] },
+  { passage: "Ravi's class made a time capsule. Each student put in something that represented them. Ravi put in a drawing of his family, a baseball card, and a letter about his favorite things. They buried the box under the school oak tree and planned to dig it up in five years.", question: "Why did they bury the time capsule?", answer: "So they could open it and remember this time in the future", options: ["So they could open it and remember this time in the future", "They didn't want their things anymore", "The teacher told them to throw things away", "They were hiding a treasure"] },
+  { passage: "Layla noticed that her friend Priya was sitting alone at lunch and not eating. She wasn't talking to anyone and kept looking at the ground. Layla sat down next to her and asked, 'Are you okay?' Priya's eyes filled with tears and she said her dog was very sick.", question: "How could Layla tell something was wrong with Priya?", answer: "Priya was sitting alone and not eating or talking", options: ["Priya was sitting alone and not eating or talking", "Priya told her earlier", "The teacher said something", "Priya was yelling"] },
+  { passage: "Oscar entered the spelling bee even though he was nervous. He practiced every night with his mom for three weeks. In the contest, he made it all the way to the final round. The last word was 'necessary.' He took a deep breath, spelled it right, and won first place!", question: "What helped Oscar win the spelling bee?", answer: "Weeks of practice with his mom", options: ["Weeks of practice with his mom", "He was just lucky", "The words were easy", "Someone whispered the answer"] },
+  { passage: "The school bus was late on Monday morning. While the kids waited, they noticed ice on the sidewalk and the roads looked shiny and wet. When the bus finally came, the driver said she had to go very slowly because the roads were slippery.", question: "Why was the bus late?", answer: "The icy roads made the driver go slowly", options: ["The icy roads made the driver go slowly", "The driver overslept", "The bus broke down", "There were too many kids"] },
+  { passage: "Amira loved reading mystery books. She always tried to figure out the ending before she got there. One night she stayed up past bedtime with a flashlight under her blanket because she was so close to solving the mystery. Her mom found her and said, 'You can finish it tomorrow.'", question: "What does this tell us about Amira?", answer: "She loves reading so much she can't put a book down", options: ["She loves reading so much she can't put a book down", "She is afraid of the dark", "She doesn't follow rules", "She doesn't like sleeping"] },
+  { passage: "The third-graders were assigned a group project about animals. Mika's group chose dolphins. Mika researched where dolphins live, Jade found out what they eat, and Sam drew pictures for the poster. When they presented, the teacher said it was one of the best projects she'd ever seen.", question: "Why was the project so good?", answer: "Each person did their part and they worked together", options: ["Each person did their part and they worked together", "The teacher helped them", "They copied from a book", "Dolphins are easy to study"] },
+  { passage: "When Grandpa was young, there were no cell phones, tablets, or internet. If he wanted to talk to a friend, he had to call on a phone attached to the wall or walk to their house. He told his grandchildren, 'You are lucky to have so many ways to connect with people.'", question: "What is Grandpa's main point?", answer: "Technology today makes it easier to communicate", options: ["Technology today makes it easier to communicate", "The old days were better", "Kids play too many games", "Walking is good exercise"] },
+  { passage: "Sophie packed her suitcase with shorts, sandals, sunscreen, and a swimsuit. Her dad loaded the cooler with cold drinks and watermelon. Mom grabbed beach towels and an umbrella. The whole family was excited for the trip.", question: "Where was the family most likely going?", answer: "To the beach", options: ["To the beach", "To the mountains", "To school", "To a wedding"] },
+  { passage: "The maple tree in the backyard changed with every season. In spring it had tiny green buds. In summer it was full of big green leaves that gave cool shade. In fall the leaves turned bright red and orange. In winter the branches were bare and covered in snow.", question: "During which season did the tree give shade?", answer: "summer", options: ["summer", "winter", "spring", "fall"] },
+  { passage: "When the new girl, Fatima, started school, she looked nervous and didn't know anyone. At lunch she sat at an empty table. Jaylen saw her sitting alone, walked over, and said, 'Hi, I'm Jaylen. Want to sit with me and my friends?' Fatima's face lit up and she said yes.", question: "How did Jaylen's actions affect Fatima?", answer: "They made her feel welcome and less alone", options: ["They made her feel welcome and less alone", "They made her more nervous", "They didn't change anything", "They made her want to go home"] },
+  { passage: "Mr. Thompson's class was reading Charlotte's Web. After they finished the book, many students felt sad about the ending. Mr. Thompson asked them to write about a time they had to say goodbye to someone they loved. He said, 'Good books make us feel real feelings, and that's okay.'", question: "Why did Mr. Thompson ask them to write about saying goodbye?", answer: "To help them connect the book to their own feelings", options: ["To help them connect the book to their own feelings", "To make them sadder", "It was a spelling test", "He didn't like the book"] },
+  { passage: "Nina collected aluminum cans from her neighborhood every Saturday. She brought them to the recycling center and got five cents for each can. After six months, she had saved thirty-two dollars. She used the money to buy art supplies for kids at the community center who couldn't afford them.", question: "What does Nina's story tell us about her character?", answer: "She is hardworking and generous", options: ["She is hardworking and generous", "She likes collecting things", "She needs money for herself", "Her parents made her do it"] },
+  { passage: "Dante's little brother was afraid of thunderstorms. Every time it thundered, he would run to Dante's room and hide under the covers. Dante started telling him stories during storms to keep his mind off the noise. Soon his brother wasn't as scared anymore because he looked forward to story time.", question: "How did Dante help his brother?", answer: "He distracted him with stories so he forgot to be scared", options: ["He distracted him with stories so he forgot to be scared", "He told him storms aren't real", "He gave him earplugs", "He made the storm stop"] },
+  { passage: "The town had not had rain in over a month. Lawns were turning brown, and the mayor asked everyone to use less water. Some families stopped watering their grass. Others took shorter showers. Slowly, everyone worked together to save water until the rain finally came.", question: "What is the main message of this passage?", answer: "A community can solve problems by working together", options: ["A community can solve problems by working together", "It never rains enough", "Grass doesn't need water", "The mayor was wrong"] },
+  { passage: "Kira brought her favorite stuffed bear to show-and-tell. She told the class, 'My grandma made this bear for me when I was born. The button eyes are from her old coat, and the fabric is from a baby blanket I used to sleep with.' Some kids giggled, but most thought it was the coolest thing anyone brought all year.", question: "Why was the bear special to Kira?", answer: "It was handmade by her grandma from meaningful materials", options: ["It was handmade by her grandma from meaningful materials", "It was from a store", "It could talk", "It was brand new"] },
+  { passage: "The science teacher showed the class two identical glasses of water. She dropped a fresh egg into the first glass and it sank. Then she stirred lots of salt into the second glass and dropped another egg in. This time, the egg floated! The students were amazed.", question: "Why did the egg float in the second glass?", answer: "The salt made the water denser so it could hold the egg up", options: ["The salt made the water denser so it could hold the egg up", "The second egg was lighter", "The glass was smaller", "The teacher used magic"] },
+  { passage: "Marcus always finished his classwork quickly and then had nothing to do. His teacher suggested he become a 'reading buddy' for the first graders. Every Tuesday, Marcus read picture books to a boy named Sam. By the end of the year, Sam could read some of the words by himself, and Marcus had found his favorite part of the week.", question: "How did being a reading buddy help both boys?", answer: "Sam learned to read and Marcus found something meaningful to do", options: ["Sam learned to read and Marcus found something meaningful to do", "Only Sam benefited", "Only Marcus benefited", "Neither one liked it"] },
+  { passage: "Zara noticed that every time she studied with music playing, she didn't remember as much on the test. When she studied in a quiet room, she got better grades. She decided to do an experiment: study half the material with music and half without. The results were the same — she did better on the quiet half.", question: "What did Zara's experiment prove?", answer: "She learns better without music distracting her", options: ["She learns better without music distracting her", "Music helps her study", "It doesn't matter either way", "She should study more"] },
+  { passage: "The fourth-grade class was raising butterflies. They watched tiny caterpillars eat milkweed leaves for two weeks. Then each caterpillar formed a chrysalis. The students checked every day until, one morning, beautiful monarch butterflies emerged. They released them outside and watched them fly away.", question: "What is the correct order of the butterfly's life stages in this passage?", answer: "Caterpillar, chrysalis, butterfly", options: ["Caterpillar, chrysalis, butterfly", "Butterfly, caterpillar, chrysalis", "Chrysalis, caterpillar, butterfly", "Egg, butterfly, caterpillar"] },
+  { passage: "Milo's family moved to a new town over the summer. On the first day of school, everything felt strange — new hallways, new teachers, and no familiar faces. At recess, a boy named Aiden asked Milo to play soccer. By the end of the week, Milo had three new friends and didn't feel so lost anymore.", question: "What changed Milo's experience at the new school?", answer: "Someone reached out and included him", options: ["Someone reached out and included him", "He transferred back to his old school", "The teachers forced kids to be his friend", "He stayed by himself all week"] },
+  { passage: "A girl named Penny wanted to raise money for the animal shelter. She made friendship bracelets and sold them at a stand in front of her house for two dollars each. In one weekend she sold forty-three bracelets. She donated all eighty-six dollars to the shelter, and they used it to buy food and blankets for the animals.", question: "How much money did Penny raise?", answer: "eighty-six dollars", options: ["eighty-six dollars", "forty-three dollars", "two dollars", "one hundred dollars"] },
+  { passage: "Mrs. Williams told her class a story about two farmers. One farmer planted his seeds and then sat inside watching TV all summer. The other farmer planted seeds, pulled weeds, watered the crops, and checked for bugs every day. In the fall, only the second farmer had a good harvest. Mrs. Williams asked, 'What can we learn from this?'", question: "What lesson was Mrs. Williams teaching?", answer: "Success takes ongoing effort, not just a good start", options: ["Success takes ongoing effort, not just a good start", "Farming is easy", "Watching TV helps plants grow", "Both farmers did the same work"] },
+  { passage: "Elena loved going to the farmer's market with her aunt. One Saturday, a woman at a jam booth offered free samples. Elena tried strawberry, peach, and blueberry. She liked the peach best. Her aunt bought a jar of peach jam and one of blueberry. Elena asked, 'Can we come back next week?' Her aunt smiled and said, 'It's a date.'", question: "Why did Elena want to come back?", answer: "She enjoyed the experience and the tasty samples", options: ["She enjoyed the experience and the tasty samples", "She forgot something", "Her aunt told her to", "She needed to buy more food"] },
+  { passage: "During a class discussion about fairness, the teacher asked, 'Is it fair if everyone gets the same thing?' One student said yes. But another student, Reese, said, 'Not always. If one person needs glasses to see and another doesn't, giving both glasses isn't fair — it's only fair to give them to the person who needs them.' The teacher said, 'That's a very thoughtful answer.'", question: "What was Reese's point about fairness?", answer: "Fairness means giving people what they need, not always the same thing", options: ["Fairness means giving people what they need, not always the same thing", "Everyone should get glasses", "Fairness doesn't matter", "The teacher was wrong"] },
 ];
 
 // ============================================================
@@ -963,7 +1055,7 @@ function updateHUD() {
 }
 
 function updateStreak() {
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 10; i++) {
     const el = document.getElementById("ss" + i);
     if (i <= streak) {
       el.classList.add("lit");
@@ -986,16 +1078,26 @@ function getRandomItems(arr, n, exclude = []) {
 function pickUnique(arr) {
   // Pick a random item from arr that hasn't been seen recently.
   // Once we've used half the pool, clear the history so items can repeat.
-  const available = arr.filter((_, i) => !recentQuestions.has(arr === PICTURE_WORDS ? 'pw'+i : arr === SIMPLE_SENTENCES ? 'ss'+i : arr === HARDER_SENTENCES ? 'hs'+i : arr === RHYMING_QUESTIONS ? 'rq'+i : arr === VOCAB_QUESTIONS ? 'vq'+i : arr === ANTONYM_QUESTIONS ? 'aq'+i : arr === PASSAGE_QUESTIONS ? 'pq'+i : 'hp'+i));
+  function getPrefix(a) {
+    if (a === PICTURE_WORDS) return 'pw';
+    if (a === SIMPLE_SENTENCES) return 'ss';
+    if (a === HARDER_SENTENCES) return 'hs';
+    if (a === RHYMING_QUESTIONS) return 'rq';
+    if (a === VOCAB_QUESTIONS) return 'vq';
+    if (a === ANTONYM_QUESTIONS) return 'aq';
+    if (a === PASSAGE_QUESTIONS) return 'pq';
+    if (a === MINI_PASSAGE_QUESTIONS) return 'mp';
+    return 'hp';
+  }
+  const pfx = getPrefix(arr);
+  const available = arr.filter((_, i) => !recentQuestions.has(pfx + i));
   const pool = available.length > 0 ? available : arr;
   if (available.length === 0) {
-    // Clear only keys for this array
-    const prefix = arr === PICTURE_WORDS ? 'pw' : arr === SIMPLE_SENTENCES ? 'ss' : arr === HARDER_SENTENCES ? 'hs' : arr === RHYMING_QUESTIONS ? 'rq' : arr === VOCAB_QUESTIONS ? 'vq' : arr === ANTONYM_QUESTIONS ? 'aq' : arr === PASSAGE_QUESTIONS ? 'pq' : 'hp';
-    for (const key of [...recentQuestions]) { if (key.startsWith(prefix)) recentQuestions.delete(key); }
+    for (const key of [...recentQuestions]) { if (key.startsWith(pfx)) recentQuestions.delete(key); }
   }
   const idx = Math.floor(Math.random() * pool.length);
   const origIdx = arr.indexOf(pool[idx]);
-  const prefix = arr === PICTURE_WORDS ? 'pw' : arr === SIMPLE_SENTENCES ? 'ss' : arr === HARDER_SENTENCES ? 'hs' : arr === RHYMING_QUESTIONS ? 'rq' : arr === VOCAB_QUESTIONS ? 'vq' : arr === ANTONYM_QUESTIONS ? 'aq' : arr === PASSAGE_QUESTIONS ? 'pq' : 'hp';
+  const prefix = pfx;
   recentQuestions.add(prefix + origIdx);
   return pool[idx];
 }
@@ -1041,9 +1143,10 @@ function genTier1Question() {
   }
 }
 
-// TIER 2 (Levels 3-4): Harder sentences + rhyming words
+// TIER 2 (Levels 3-4): Harder sentences + rhyming words + mini reading comprehension
 function genTier2Question() {
-  if (Math.random() < 0.5) {
+  const r = Math.random();
+  if (r < 0.35) {
     const q = pickUnique(HARDER_SENTENCES);
     return {
       type: "sentence",
@@ -1054,7 +1157,7 @@ function genTier2Question() {
       options: [...q.options].sort(() => Math.random() - 0.5),
       isSentence: true,
     };
-  } else {
+  } else if (r < 0.65) {
     const q = pickUnique(RHYMING_QUESTIONS);
     return {
       type: "sentence",
@@ -1065,12 +1168,26 @@ function genTier2Question() {
       options: [...q.options].sort(() => Math.random() - 0.5),
       isSentence: true,
     };
+  } else {
+    // Mini reading comprehension
+    const q = pickUnique(MINI_PASSAGE_QUESTIONS);
+    return {
+      type: "passage",
+      prompt: "Read, then answer",
+      display: q.passage,
+      question: q.question,
+      hint: "Read both sentences carefully!",
+      answer: q.answer,
+      options: [...q.options].sort(() => Math.random() - 0.5),
+      isPassage: true,
+    };
   }
 }
 
-// TIER 3 (Levels 5-6): Vocabulary meanings + antonyms
+// TIER 3 (Levels 5-6): Vocabulary meanings + antonyms + mini reading comprehension
 function genTier3Question() {
-  if (Math.random() < 0.5) {
+  const r = Math.random();
+  if (r < 0.33) {
     const q = pickUnique(VOCAB_QUESTIONS);
     return {
       type: "sentence",
@@ -1081,7 +1198,7 @@ function genTier3Question() {
       options: [...q.options].sort(() => Math.random() - 0.5),
       isSentence: true,
     };
-  } else {
+  } else if (r < 0.66) {
     const q = pickUnique(ANTONYM_QUESTIONS);
     return {
       type: "sentence",
@@ -1091,6 +1208,19 @@ function genTier3Question() {
       answer: q.answer,
       options: [...q.options].sort(() => Math.random() - 0.5),
       isSentence: true,
+    };
+  } else {
+    // Mini reading comprehension
+    const q = pickUnique(MINI_PASSAGE_QUESTIONS);
+    return {
+      type: "passage",
+      prompt: "Read, then answer",
+      display: q.passage,
+      question: q.question,
+      hint: "Read carefully!",
+      answer: q.answer,
+      options: [...q.options].sort(() => Math.random() - 0.5),
+      isPassage: true,
     };
   }
 }
@@ -1184,8 +1314,8 @@ function handleAnswer(btn, selected, correct) {
     // CORRECT
     btn.classList.add("correct");
     sfxCorrect();
-    streak = Math.min(streak + 1, 5);
-    const bonus = streak >= 5 ? STREAK_BONUS : 0;
+    streak = Math.min(streak + 1, 10);
+    const bonus = streak >= 10 ? STREAK_BONUS : 0;
     const earned = POINTS_PER_CORRECT + bonus;
     points += earned;
     totalCorrect++;
