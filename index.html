@@ -506,7 +506,7 @@ const POINTS_PER_CORRECT = 10;
 const STREAK_BONUS = 5;
 const POINTS_TO_LEVEL_UP = 150; // points needed per level
 const MAX_LEVEL = 10;
-const VIDEO_EVERY_N_LEVELS = 3; // video reward every N levels (3, 6, 9)
+const VIDEO_EVERY_N_LEVELS = 1; // video reward every level-up
 
 // --- YouTube Video Rewards (one per level-up) ---
 // Replace these placeholder URLs with real YouTube embed links
@@ -1382,14 +1382,10 @@ function levelUp() {
   document.getElementById("lu-title").textContent = `Level ${level}!`;
   document.getElementById("lu-msg").textContent = LEVELUP_MESSAGES[Math.min(level - 2, LEVELUP_MESSAGES.length - 1)];
 
-  // Video reward — only every N levels (3, 6, 9)
+  // Video reward — every level-up
   const container = document.getElementById("lu-video-container");
-  if (level % VIDEO_EVERY_N_LEVELS === 0) {
-    const videoUrl = VIDEO_POOL[Math.floor(Math.random() * VIDEO_POOL.length)];
-    container.innerHTML = `<iframe src="${videoUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-  } else {
-    container.innerHTML = `<div style="text-align:center;padding:1.5rem;font-size:1.3rem;color:#7C3AED;">Keep going! Video reward at Level ${Math.ceil(level / VIDEO_EVERY_N_LEVELS) * VIDEO_EVERY_N_LEVELS}! 🎬</div>`;
-  }
+  const videoUrl = VIDEO_POOL[Math.floor(Math.random() * VIDEO_POOL.length)];
+  container.innerHTML = `<iframe src="${videoUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 
   document.getElementById("overlay-levelup").classList.add("active");
   updateHUD();
