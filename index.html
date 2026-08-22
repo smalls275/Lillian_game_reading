@@ -1169,11 +1169,11 @@ function pickUnique(arr) {
 }
 
 function generateQuestion() {
-  // Determine question type based on level
-  if (level <= 2) return genTier1Question();
-  if (level <= 4) return genTier2Question();
-  if (level <= 6) return genTier3Question();
-  if (level <= 8) return genTier4Question();
+  // Start with real reading work; picture identification is intentionally skipped.
+  if (level <= 2) return genTier2Question();
+  if (level <= 4) return genTier3Question();
+  if (level <= 6) return genTier4Question();
+  if (level <= 8) return genTier5Question();
   return genTier5Question();
 }
 
