@@ -506,7 +506,7 @@ const recentQuestions = new Set();
 const POINTS_PER_CORRECT = 10;
 const STREAK_BONUS = 5;
 const POINTS_TO_LEVEL_UP = 150; // points needed per level
-const MAX_LEVEL = 10;
+const MAX_LEVEL = 12;
 const VIDEO_EVERY_N_LEVELS = 1; // video reward every level-up
 
 // --- YouTube Video Rewards (one per level-up) ---
@@ -966,6 +966,71 @@ const HARD_PASSAGE_QUESTIONS = [
   { passage: "During a class discussion about fairness, the teacher asked, 'Is it fair if everyone gets the same thing?' One student said yes. But another student, Reese, said, 'Not always. If one person needs glasses to see and another doesn't, giving both glasses isn't fair — it's only fair to give them to the person who needs them.' The teacher said, 'That's a very thoughtful answer.'", question: "What was Reese's point about fairness?", answer: "Fairness means giving people what they need, not always the same thing", options: ["Fairness means giving people what they need, not always the same thing", "Everyone should get glasses", "Fairness doesn't matter", "The teacher was wrong"] },
 ];
 
+// TIER 6 (Levels 11-12): Chapter-book challenge with deeper reasoning.
+// These questions ask readers to connect details, infer motives, and explain ideas.
+const CHAPTER_BOOK_QUESTIONS = [
+  {
+    passage: "On the first Saturday of spring, Mira found a packet of moonflower seeds in her grandmother's desk. The packet said the flowers opened at night, but the garden behind the house was tangled with weeds. Mira wanted to plant the seeds immediately. Instead, she spent the morning clearing a sunny patch and mixing compost into the soil.\n\nFor the next three weeks, Mira watered the patch every other day and kept a notebook. The first sprouts were tiny, and one afternoon a storm flattened them. Mira felt disappointed, but she placed small sticks around the plants and tied the stems gently upright. At the end of summer, the moonflowers opened like white stars after sunset.",
+    question: "Which idea is best supported by Mira's actions?",
+    answer: "Patience and careful effort can help a fragile idea grow",
+    options: ["Patience and careful effort can help a fragile idea grow", "Gardening is easy when flowers grow at night", "Storms always destroy gardens", "Mira cared more about notebooks than flowers"]
+  },
+  {
+    passage: "Theo's class was building a bridge from craft sticks. His group made the longest bridge first, and everyone celebrated. When they placed books on it, the middle sagged and the bridge collapsed. Theo wanted to start over with more sticks, but Priya studied the broken pieces. She noticed that the sticks had been laid in straight rows.\n\nThe group built a shorter bridge with triangle shapes along its sides. It used fewer sticks, but it held every book. Theo admitted that the first bridge had looked impressive without being strong. Their teacher asked the class to write one sentence about what they had learned.",
+    question: "Why did the second bridge work better?",
+    answer: "Its triangle shapes spread the weight and made the structure stronger",
+    options: ["Its triangle shapes spread the weight and made the structure stronger", "It was painted a different color", "It used the longest sticks", "Priya held it up while the books were added"]
+  },
+  {
+    passage: "Every afternoon, Jun took the long way home past the old train station. The station had been closed for years, but its clock still showed 4:17. Jun imagined that the clock was waiting for a train that would never arrive.\n\nOne day, Jun saw an elderly man polishing the clock's brass hands. The man explained that he had been a conductor when the station was busy. He could not repair the clock's motor, but he cleaned it each week because it reminded him of people who had traveled through the station. Jun began helping him. Together they made a sign telling the station's history, and soon neighbors were visiting the old building.",
+    question: "Why did the neighbors begin visiting the station?",
+    answer: "Jun and the conductor helped people understand its history",
+    options: ["Jun and the conductor helped people understand its history", "A new train began stopping there", "The clock started working again", "The station began selling tickets"]
+  },
+  {
+    passage: "At the beginning of the school year, Amara was certain she disliked science. Her first experiment failed because she measured the water incorrectly. During the next experiment, her paper bridge fell apart. She wrote 'I am bad at this' in the margin of her notebook.\n\nHer teacher asked Amara to replace that sentence with 'I have not figured this out yet.' Amara began recording what changed each time she tried. By winter, she had designed a filter that made muddy water clearer. It was not perfect, but she could explain exactly how she would improve it.",
+    question: "What caused Amara's attitude to change?",
+    answer: "She treated mistakes as clues and used them to improve her designs",
+    options: ["She treated mistakes as clues and used them to improve her designs", "Her teacher gave her the correct answers", "Her experiments stopped being difficult", "She decided science did not require measuring"]
+  },
+  {
+    passage: "The village library received one mysterious book with no title on its cover. Inside, every chapter ended with a question. The librarian invited visitors to write possible answers on slips of paper and place them between the pages.\n\nSome readers wrote quickly because they wanted to be first. Others reread earlier chapters and noticed small clues they had missed. At the end of the month, the librarian displayed the most carefully supported answers, including several that disagreed with one another. She explained that strong readers do not only guess what happens; they use details to build and revise ideas.",
+    question: "What is the librarian mainly teaching through the mystery book?",
+    answer: "Good readers use evidence and change their thinking when they find new clues",
+    options: ["Good readers use evidence and change their thinking when they find new clues", "The fastest reader always has the best answer", "Every story has only one possible meaning", "Readers should avoid difficult questions"]
+  },
+  {
+    passage: "When Rowan's family moved, he missed his old friends and refused to unpack his bicycle. In his new neighborhood, he noticed a cracked sign at the edge of an empty lot: COMMUNITY GARDEN. The weeds were taller than Rowan, and the sign had lost several letters.\n\nRowan first repaired the sign. Then he asked neighbors what they would grow. A baker wanted herbs, a teacher wanted sunflowers, and a child named Nia wanted strawberries. Rowan still missed his old home, but each person who helped gave him another reason to return. By autumn, the empty lot had paths, beds, and a bench where everyone shared stories.",
+    question: "How did the garden help Rowan adjust to his new neighborhood?",
+    answer: "Working with neighbors helped him form connections and feel that he belonged",
+    options: ["Working with neighbors helped him form connections and feel that he belonged", "It made him forget all about his old friends", "It gave him a bicycle with new wheels", "It kept him from talking to anyone"]
+  },
+  {
+    passage: "A storm knocked out the power during the town's history night. The projector went dark just as the museum guide began showing photographs. Instead of canceling, the guide asked visitors to gather around the display cases. She gave each person a flashlight and invited them to choose one object to describe.\n\nA child described a silver compass. A sailor explained how he had used a similar compass at sea. The room became quieter than it had been during the slideshow. When the lights returned, no one asked to restart the projector. They had discovered that listening to one another made the objects feel alive.",
+    question: "Why did the history night become more meaningful after the power failed?",
+    answer: "People connected the objects to real stories and shared their ideas",
+    options: ["People connected the objects to real stories and shared their ideas", "The projector showed a better presentation later", "The museum sent everyone home", "The objects became newer during the storm"]
+  },
+  {
+    passage: "Sana found two notes inside a library book. The first said, 'The treasure is beneath the tallest tree.' The second said, 'Do not trust the first clue.' Sana wanted to race outside, but she checked the book's checkout card. The notes had been written years apart by different readers.\n\nShe searched the library instead and found a map tucked inside an atlas. The map led to a locked cabinet containing old photographs, not gold. On the back of one photograph was a note: 'Treasure is what a place helps us remember.' Sana returned the map but kept a copy of the photograph's story for the library display.",
+    question: "Why did Sana check the checkout card before following the first note?",
+    answer: "She wanted to evaluate the clues instead of trusting an unexplained message",
+    options: ["She wanted to evaluate the clues instead of trusting an unexplained message", "She was looking for a way to leave the library", "She knew the tallest tree was dangerous", "She wanted to find the newest reader"]
+  },
+  {
+    passage: "The school announced that each class could choose one project for Earth Week. Some students wanted to plant trees. Others wanted to clean the creek. Malik suggested measuring the creek's water before and after the cleanup. At first, the class argued about which idea mattered most.\n\nTheir teacher asked them to combine the ideas. Students removed litter, planted trees beside the creek, and recorded the water's clarity each month. The project took longer than a single cleanup day, but the class could see that the shade from the trees kept the soil from washing into the water.",
+    question: "What made the class project stronger than either original idea alone?",
+    answer: "It combined action with measurements so students could observe long-term effects",
+    options: ["It combined action with measurements so students could observe long-term effects", "It chose the shortest activity", "It avoided working near the creek", "It allowed only one group to participate"]
+  },
+  {
+    passage: "Before the concert, Elena's violin string snapped. She had practiced the opening solo for weeks and felt ready to quit. Her friend Noor offered a spare string, but replacing it would take time. Elena remembered that the ensemble had rehearsed the same melody together.\n\nShe asked the conductor to move her solo later in the program. While the string was replaced, Elena played the melody with the violins in the back row. When she finally performed the solo, she listened closely to the other instruments and entered at exactly the right moment. The audience applauded, but Elena was proudest that the music had continued.",
+    question: "What does Elena's response reveal about her?",
+    answer: "She can adapt to a problem and remain part of a team",
+    options: ["She can adapt to a problem and remain part of a team", "She only cares about performing alone", "She had never practiced the melody", "She blamed Noor for the broken string"]
+  },
+];
+
 // ============================================================
 //  AUDIO - Simple Web Audio beeps (no files needed)
 // ============================================================
@@ -1243,13 +1308,14 @@ function genTier4Question() {
 
 // TIER 5 (Levels 9-10): Harder comprehension with inference
 function genTier5Question() {
-  const q = pickUnique(HARD_PASSAGE_QUESTIONS);
+  const isChapterChallenge = level >= 11;
+  const q = pickUnique(isChapterChallenge ? CHAPTER_BOOK_QUESTIONS : HARD_PASSAGE_QUESTIONS);
   return {
     type: "passage",
-    prompt: "Read carefully, then answer",
+    prompt: isChapterChallenge ? "Chapter book challenge" : "Read carefully, then answer",
     display: q.passage,
     question: q.question,
-    hint: "Think about WHY things happen!",
+    hint: isChapterChallenge ? "Use details from the whole passage!" : "Think about WHY things happen!",
     answer: q.answer,
     options: [...q.options].sort(() => Math.random() - 0.5),
     isPassage: true,
